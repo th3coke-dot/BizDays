@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import {
@@ -31,8 +31,30 @@ function navFor(country: CountryCode, lang: AppLanguage) {
   return { links, paths, labels };
 }
 
+function nativeLangCode(country: CountryCode) {
+  switch (country) {
+    case "no":
+      return "NO";
+    case "se":
+      return "SV";
+    case "dk":
+      return "DA";
+    case "fi":
+      return "FI";
+    case "de":
+      return "DE";
+    case "pl":
+      return "PL";
+    case "is":
+      return "IS";
+    default:
+      return "EN";
+  }
+}
+
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const country = getCountryFromPath(pathname);
   const lang = getLanguageFromPath(pathname);
   const { links, paths, labels } = navFor(country, lang);
@@ -73,7 +95,7 @@ export function Header() {
             aria-label={labels.country}
             onChange={(e) => {
               const next = e.target.value as CountryCode;
-              window.location.href = getCountryPaths(next, lang).homePath;
+              router.push(getCountryPaths(next, lang).homePath);
             }}
           >
             {COUNTRY_LIST.map((c) => (
@@ -89,26 +111,10 @@ export function Header() {
             aria-label={labels.language}
             onChange={(e) => {
               const next = e.target.value as AppLanguage;
-              window.location.href = switchLanguagePath(pathname, country, next);
+              router.push(switchLanguagePath(pathname, country, next));
             }}
           >
-            <option value="native">
-              {country === "no"
-                ? "NO"
-                : country === "se"
-                  ? "SV"
-                  : country === "dk"
-                    ? "DA"
-                    : country === "fi"
-                      ? "FI"
-                      : country === "de"
-                        ? "DE"
-                        : country === "pl"
-                          ? "PL"
-                          : country === "is"
-                            ? "IS"
-                            : "EN"}
-            </option>
+            <option value="native">{nativeLangCode(country)}</option>
             {country !== "uk" && <option value="en">EN</option>}
           </select>
 
