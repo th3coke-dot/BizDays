@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/helligdager/2026",
     "/helligdager/2027",
     "/feriepenger",
+    "/arbeidsgiverkostnad",
     "/countdown",
     "/om",
     "/en",
@@ -29,6 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         `${en.holidaysPath}/2026`,
         `${en.holidaysPath}/2027`,
         en.countdownPath,
+        en.employmentCostPath,
       );
       continue;
     }
@@ -40,6 +42,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       `${native.holidaysPath}/2026`,
       `${native.holidaysPath}/2027`,
       native.countdownPath,
+      native.employmentCostPath,
     );
     if (c.code !== "uk") {
       const en = getCountryPaths(c.code, "en");
@@ -50,6 +53,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         `${en.holidaysPath}/2026`,
         `${en.holidaysPath}/2027`,
         en.countdownPath,
+        en.employmentCostPath,
       );
     }
   }

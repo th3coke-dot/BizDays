@@ -23,6 +23,11 @@ const CATALOG: Record<string, RelatedLink> = {
     title: "Beregn feriepenger",
     description: "Regn ut feriepenger med riktig sats.",
   },
+  arbeidsgiverkostnad: {
+    href: "/arbeidsgiverkostnad",
+    title: "Total kostnad ved ansettelse",
+    description: "Estimer arbeidsgiveravgift og OTP oppå bruttolønn.",
+  },
   countdown: {
     href: "/countdown",
     title: "Countdown",

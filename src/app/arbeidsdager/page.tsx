@@ -44,7 +44,9 @@ export default function ArbeidsdagerPage() {
         </p>
       </aside>
 
-      <RelatedLinks keys={["helligdager", "feriepenger", "countdown"]} />
+      <RelatedLinks
+        keys={["helligdager", "feriepenger", "arbeidsgiverkostnad", "countdown"]}
+      />
     </div>
   );
 }

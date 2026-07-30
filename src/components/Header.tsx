@@ -23,6 +23,7 @@ function navFor(country: CountryCode, lang: AppLanguage) {
     { href: paths.workdaysPath, label: labels.workdays },
     { href: paths.holidaysPath, label: labels.holidays },
     { href: paths.countdownPath, label: labels.countdown },
+    { href: paths.employmentCostPath, label: labels.employmentCost },
   ];
   if (country === "no" && lang === "native") {
     links.splice(2, 0, { href: "/feriepenger", label: "Feriepenger" });
