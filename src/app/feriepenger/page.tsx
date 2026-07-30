@@ -8,7 +8,7 @@ import { createPageMetadata } from "@/lib/seo";
 export const metadata: Metadata = createPageMetadata({
   title: "Beregn feriepenger",
   description:
-    "Regn ut feriepenger med 10,2 %, 12 % eller sats for arbeidstakere over 60 år.",
+    "Regn ut feriepenger og simuler en typisk juni-lønnsslipp med feriepengetrekk, skatt og netto.",
   path: "/feriepenger",
 });
 
@@ -20,8 +20,8 @@ export default function FeriepengerPage() {
           Beregn feriepenger
         </h1>
         <p className="mt-3 max-w-2xl text-[var(--muted)]">
-          En rask oversikt over hva du kan forvente i feriepenger basert på
-          feriepengegrunnlaget.
+          Se feriepengebeløpet – og hvordan en juni-lønnsslipp kan se ut med
+          lønn, feriepengetrekk, skatt og netto utbetaling.
         </p>
       </header>
 
@@ -37,7 +37,10 @@ export default function FeriepengerPage() {
         </p>
         <p className="mt-2">
           Grunnlaget er vanligvis fjorårets lønn, og feriepengene utbetales ofte
-          i juni – med mindre dere har annen avtale. Planlegg ferien med{" "}
+          i juni. Juni-lønnsslippen er en forenklet simulering: mange får
+          feriepenger utbetalt samtidig som ordinær juni-lønn trekkes
+          (feriepengetrekk). Faktisk skattetrekk følger skattetabell, ikke bare
+          en fast prosent. Planlegg ferien med{" "}
           <Link
             href="/arbeidsdager"
             className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
