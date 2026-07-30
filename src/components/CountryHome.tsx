@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CalendarRange, Flag } from "lucide-react";
+import { ArrowRight, CalendarRange, Flag, Timer } from "lucide-react";
 import type { CountryConfig } from "@/lib/countries";
 
 export function CountryHome({ country }: { country: CountryConfig }) {
@@ -15,6 +15,12 @@ export function CountryHome({ country }: { country: CountryConfig }) {
       title: country.labels.holidays,
       description: `${country.labels.holidays} 2026–2027`,
       icon: Flag,
+    },
+    {
+      href: country.countdownPath,
+      title: country.labels.countdown,
+      description: country.labels.countdown,
+      icon: Timer,
     },
   ];
 
@@ -57,7 +63,7 @@ export function CountryHome({ country }: { country: CountryConfig }) {
         <h2 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--primary)]">
           {country.labels.toolsHeading}
         </h2>
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
           {tools.map((tool) => (
             <Link
               key={tool.href}

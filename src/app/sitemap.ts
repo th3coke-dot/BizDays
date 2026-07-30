@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       c.homePath,
       c.workdaysPath,
       c.holidaysPath,
+      c.countdownPath,
       `${c.holidaysPath}/2026`,
       `${c.holidaysPath}/2027`,
     ],

@@ -4,13 +4,19 @@ import { useEffect, useMemo, useState } from "react";
 import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
+import { COUNTRIES, type CountryCode } from "@/lib/countries";
 import { diffParts, getCountdownTargets } from "@/lib/countdown";
-import { formatDateNO } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { cn, formatDateNO } from "@/lib/utils";
 
-export function CountdownBoard() {
-  const targets = useMemo(() => getCountdownTargets(), []);
-  const [activeId, setActiveId] = useState(targets[0]?.id ?? "sommerferie");
+type Props = {
+  country?: CountryCode;
+};
+
+export function CountdownBoard({ country = "no" }: Props) {
+  const labels = COUNTRIES[country].labels;
+  const path = COUNTRIES[country].countdownPath;
+  const targets = useMemo(() => getCountdownTargets(country), [country]);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
   const [copied, setCopied] = useState(false);
 
@@ -19,15 +25,28 @@ export function CountdownBoard() {
     return () => window.clearInterval(id);
   }, []);
 
-  const active = targets.find((t) => t.id === activeId) ?? targets[0];
+  const resolvedId =
+    activeId && targets.some((t) => t.id === activeId)
+      ? activeId
+      : (targets[0]?.id ?? "");
+  const active = targets.find((t) => t.id === resolvedId) ?? targets[0];
+  if (!active) return null;
   const parts = diffParts(active.date, now);
 
   async function share() {
-    const text = `${parts.days} dager til ${active.name} (${formatDateNO(active.date)}) – via BizDays`;
+    const unit =
+      country === "se"
+        ? "dagar"
+        : country === "dk"
+          ? "dage"
+          : country === "fi"
+            ? "päivää"
+            : "dager";
+    const text = `${parts.days} ${unit} → ${active.name} (${formatDateNO(active.date)}) – BizDays`;
     const url =
       typeof window !== "undefined"
-        ? `${window.location.origin}/countdown?t=${active.id}`
-        : "/countdown";
+        ? `${window.location.origin}${path}?t=${active.id}`
+        : path;
 
     if (navigator.share) {
       await navigator.share({ title: "BizDays Countdown", text, url });
@@ -39,6 +58,13 @@ export function CountdownBoard() {
     window.setTimeout(() => setCopied(false), 2000);
   }
 
+  const units = [
+    { label: labels.days, value: parts.days },
+    { label: labels.hours, value: parts.hours },
+    { label: labels.minutes, value: parts.minutes },
+    { label: labels.seconds, value: parts.seconds },
+  ];
+
   return (
     <div className="grid gap-6">
       <div className="flex flex-wrap gap-2">
@@ -49,7 +75,7 @@ export function CountdownBoard() {
             onClick={() => setActiveId(target.id)}
             className={cn(
               "rounded-lg px-4 py-2 text-sm font-semibold transition",
-              activeId === target.id
+              resolvedId === target.id
                 ? "bg-[var(--accent)] text-white"
                 : "bg-white/80 text-[var(--primary)] ring-1 ring-[var(--border)] hover:ring-[var(--accent)]",
             )}
@@ -66,12 +92,7 @@ export function CountdownBoard() {
         </CardDescription>
 
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[
-            { label: "Dager", value: parts.days },
-            { label: "Timer", value: parts.hours },
-            { label: "Minutt", value: parts.minutes },
-            { label: "Sekund", value: parts.seconds },
-          ].map((unit) => (
+          {units.map((unit) => (
             <div
               key={unit.label}
               className="animate-count-in rounded-xl bg-[var(--surface-muted)] px-3 py-5 text-center"
@@ -89,7 +110,7 @@ export function CountdownBoard() {
         <div className="mt-6">
           <Button type="button" variant="outline" onClick={share}>
             <Share2 className="h-4 w-4" />
-            {copied ? "Kopiert!" : "Del countdown"}
+            {copied ? labels.copied : labels.shareCountdown}
           </Button>
         </div>
       </Card>
