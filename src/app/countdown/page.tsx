@@ -22,7 +22,7 @@ export default function CountdownPage() {
         </p>
       </header>
 
-      <CountdownBoard />
+      <CountdownBoard country="no" />
       <RelatedLinks keys={["helligdager", "arbeidsdager", "feriepenger"]} />
     </div>
   );

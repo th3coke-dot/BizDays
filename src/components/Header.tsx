@@ -17,13 +17,11 @@ function navFor(country: CountryCode) {
   const links = [
     { href: c.workdaysPath, label: c.labels.workdays },
     { href: c.holidaysPath, label: c.labels.holidays },
+    { href: c.countdownPath, label: c.labels.countdown },
   ];
   if (country === "no") {
-    links.push(
-      { href: "/feriepenger", label: "Feriepenger" },
-      { href: "/countdown", label: "Countdown" },
-      { href: "/om", label: "Om" },
-    );
+    links.splice(2, 0, { href: "/feriepenger", label: "Feriepenger" });
+    links.push({ href: "/om", label: "Om" });
   }
   return links;
 }

@@ -13,6 +13,7 @@ export type CountryConfig = {
   homePath: string;
   workdaysPath: string;
   holidaysPath: string;
+  countdownPath: string;
   labels: {
     workdays: string;
     holidays: string;
@@ -37,6 +38,13 @@ export type CountryConfig = {
     heroSupport: string;
     ctaWorkdays: string;
     ctaHolidays: string;
+    countdown: string;
+    shareCountdown: string;
+    copied: string;
+    days: string;
+    hours: string;
+    minutes: string;
+    seconds: string;
   };
 };
 
@@ -51,6 +59,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
     homePath: "/",
     workdaysPath: "/arbeidsdager",
     holidaysPath: "/helligdager",
+    countdownPath: "/countdown",
     labels: {
       workdays: "Arbeidsdager",
       holidays: "Helligdager",
@@ -76,6 +85,13 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       heroSupport: "Enkle verktøy for planlegging, lønn og ferie. Bygget for Norge.",
       ctaWorkdays: "Beregn arbeidsdager",
       ctaHolidays: "Se helligdager",
+      countdown: "Countdown",
+      shareCountdown: "Del countdown",
+      copied: "Kopiert!",
+      days: "Dager",
+      hours: "Timer",
+      minutes: "Minutt",
+      seconds: "Sekund",
     },
   },
   se: {
@@ -88,6 +104,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
     homePath: "/se",
     workdaysPath: "/se/arbetsdagar",
     holidaysPath: "/se/helgdagar",
+    countdownPath: "/se/countdown",
     labels: {
       workdays: "Arbetsdagar",
       holidays: "Helgdagar",
@@ -112,6 +129,13 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       heroSupport: "Enkla verktyg för planering. Byggt för Sverige.",
       ctaWorkdays: "Beräkna arbetsdagar",
       ctaHolidays: "Se helgdagar",
+      countdown: "Countdown",
+      shareCountdown: "Dela countdown",
+      copied: "Kopierat!",
+      days: "Dagar",
+      hours: "Timmar",
+      minutes: "Minuter",
+      seconds: "Sekunder",
     },
   },
   dk: {
@@ -124,6 +148,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
     homePath: "/dk",
     workdaysPath: "/dk/arbejdsdage",
     holidaysPath: "/dk/helligdage",
+    countdownPath: "/dk/countdown",
     labels: {
       workdays: "Arbejdsdage",
       holidays: "Helligdage",
@@ -148,6 +173,13 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       heroSupport: "Enkle værktøjer til planlægning. Bygget til Danmark.",
       ctaWorkdays: "Beregn arbejdsdage",
       ctaHolidays: "Se helligdage",
+      countdown: "Countdown",
+      shareCountdown: "Del countdown",
+      copied: "Kopieret!",
+      days: "Dage",
+      hours: "Timer",
+      minutes: "Minutter",
+      seconds: "Sekunder",
     },
   },
   fi: {
@@ -160,6 +192,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
     homePath: "/fi",
     workdaysPath: "/fi/tyopaivat",
     holidaysPath: "/fi/pyhapaivat",
+    countdownPath: "/fi/countdown",
     labels: {
       workdays: "Työpäivät",
       holidays: "Pyhäpäivät",
@@ -184,6 +217,13 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       heroSupport: "Yksinkertaiset työkalut suunnitteluun. Rakennettu Suomelle.",
       ctaWorkdays: "Laske työpäivät",
       ctaHolidays: "Katso pyhäpäivät",
+      countdown: "Countdown",
+      shareCountdown: "Jaa countdown",
+      copied: "Kopioitu!",
+      days: "Päivää",
+      hours: "Tuntia",
+      minutes: "Minuuttia",
+      seconds: "Sekuntia",
     },
   },
 };
