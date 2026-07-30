@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CalendarRange, Coins, Flag } from "lucide-react";
+import { ArrowRight, CalendarRange, Coins, Flag, Wallet } from "lucide-react";
 import { AdSlot } from "@/components/AdSlot";
 import { RelatedLinks } from "@/components/RelatedLinks";
 import { createPageMetadata } from "@/lib/seo";
@@ -31,6 +31,13 @@ const tools = [
     title: "Feriepenger",
     description: "Beregn feriepenger med 10,2 %, 12 % eller sats for over 60.",
     icon: Coins,
+  },
+  {
+    href: "/arbeidsgiverkostnad",
+    title: "Arbeidsgiverkostnad",
+    description:
+      "Estimer total kostnad ved ansettelse med sone for arbeidsgiveravgift.",
+    icon: Wallet,
   },
 ];
 
@@ -81,9 +88,9 @@ export default function HomePage() {
           Velg et verktøy
         </h2>
         <p className="mt-2 max-w-2xl text-[var(--muted)]">
-          Tre hurtigvalg for det du trenger oftest i arbeidshverdagen.
+          Hurtigvalg for det du trenger oftest i arbeidshverdagen.
         </p>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {tools.map((tool) => (
             <Link
               key={tool.href}

@@ -5,6 +5,7 @@ const footerLinks = [
   { href: "/arbeidsdager", label: "Arbeidsdager" },
   { href: "/helligdager", label: "Helligdager" },
   { href: "/feriepenger", label: "Feriepenger" },
+  { href: "/arbeidsgiverkostnad", label: "Arbeidsgiverkostnad" },
   { href: "/countdown", label: "Countdown" },
   { href: "/om", label: "Om BizDays" },
   { href: "/en", label: "English" },

@@ -31,6 +31,16 @@ export type UiLabels = {
   seconds: string;
   language: string;
   country: string;
+  employmentCost: string;
+  employmentCostTitle: string;
+  employmentCostSupport: string;
+  grossSalary: string;
+  regionFactor: string;
+  employerCharges: string;
+  totalEmploymentCost: string;
+  effectiveEmployerRate: string;
+  calculateCost: string;
+  costDisclaimerTitle: string;
 };
 
 /** Shared English UI for every country. */
@@ -67,6 +77,16 @@ export const EN_LABELS: UiLabels = {
   seconds: "Seconds",
   language: "Language",
   country: "Country",
+  employmentCost: "Employment cost",
+  employmentCostTitle: "Total cost of employment",
+  employmentCostSupport: "Estimate employer charges on top of gross salary.",
+  grossSalary: "Gross annual salary",
+  regionFactor: "Regional / industry factor",
+  employerCharges: "Employer charges",
+  totalEmploymentCost: "Total employment cost",
+  effectiveEmployerRate: "Effective employer rate",
+  calculateCost: "Calculate cost",
+  costDisclaimerTitle: "Important",
 };
 
 export function englishLabelsForCountry(

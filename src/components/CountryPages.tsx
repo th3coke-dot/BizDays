@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { CountdownBoard } from "@/components/CountdownBoard";
+import { EmploymentCostCalculator } from "@/components/EmploymentCostCalculator";
 import { HolidayList } from "@/components/HolidayList";
 import { WorkdaysCalculator } from "@/components/WorkdaysCalculator";
 import { getHolidaysForCountryYear } from "@/data/holidays";
@@ -149,6 +150,49 @@ export function CountryCountdownPage({ country }: { country: LocalizedCountry })
         </h1>
       </header>
       <CountdownBoard country={country.code} lang={country.lang} />
+      <p className="mt-8 text-sm text-[var(--muted)]">
+        <Link href={country.workdaysPath} className="text-[var(--accent)] hover:underline">
+          {country.labels.workdays}
+        </Link>
+        {" · "}
+        <Link href={country.holidaysPath} className="text-[var(--accent)] hover:underline">
+          {country.labels.holidays}
+        </Link>
+        {" · "}
+        <Link
+          href={country.employmentCostPath}
+          className="text-[var(--accent)] hover:underline"
+        >
+          {country.labels.employmentCost}
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+export function CountryEmploymentCostPage({
+  country,
+}: {
+  country: LocalizedCountry;
+}) {
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-12">
+      <header className="mb-8">
+        <p className="text-sm font-medium text-[var(--muted)]">
+          {country.lang === "en" ? country.name : country.nativeName}
+        </p>
+        <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-[var(--primary)] sm:text-4xl">
+          {country.labels.employmentCostTitle}
+        </h1>
+        <p className="mt-3 max-w-2xl text-[var(--muted)]">
+          {country.labels.employmentCostSupport}
+        </p>
+      </header>
+      <EmploymentCostCalculator
+        country={country.code}
+        labels={country.labels}
+        lang={country.lang}
+      />
       <p className="mt-8 text-sm text-[var(--muted)]">
         <Link href={country.workdaysPath} className="text-[var(--accent)] hover:underline">
           {country.labels.workdays}

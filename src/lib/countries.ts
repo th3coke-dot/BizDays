@@ -18,6 +18,7 @@ export type CountryConfig = {
     workdays: string;
     holidays: string;
     countdown: string;
+    employmentCost: string;
   };
   labels: UiLabels;
   /** English labels (always available). */
@@ -33,6 +34,7 @@ function pathsFor(country: CountryConfig, lang: AppLanguage) {
         workdaysPath: "/uk/workdays",
         holidaysPath: "/uk/holidays",
         countdownPath: "/uk/countdown",
+        employmentCostPath: "/uk/employment-cost",
       };
     }
     const base = `/en/${country.code}`;
@@ -41,6 +43,7 @@ function pathsFor(country: CountryConfig, lang: AppLanguage) {
       workdaysPath: `${base}/workdays`,
       holidaysPath: `${base}/holidays`,
       countdownPath: `${base}/countdown`,
+      employmentCostPath: `${base}/employment-cost`,
     };
   }
 
@@ -51,6 +54,7 @@ function pathsFor(country: CountryConfig, lang: AppLanguage) {
       workdaysPath: `/${country.nativeSegments.workdays}`,
       holidaysPath: `/${country.nativeSegments.holidays}`,
       countdownPath: `/${country.nativeSegments.countdown}`,
+      employmentCostPath: `/${country.nativeSegments.employmentCost}`,
     };
   }
   return {
@@ -58,6 +62,7 @@ function pathsFor(country: CountryConfig, lang: AppLanguage) {
     workdaysPath: `${prefix}/${country.nativeSegments.workdays}`,
     holidaysPath: `${prefix}/${country.nativeSegments.holidays}`,
     countdownPath: `${prefix}/${country.nativeSegments.countdown}`,
+    employmentCostPath: `${prefix}/${country.nativeSegments.employmentCost}`,
   };
 }
 
@@ -73,6 +78,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       workdays: "arbeidsdager",
       holidays: "helligdager",
       countdown: "countdown",
+      employmentCost: "arbeidsgiverkostnad",
     },
     labels: {
       ...EN_LABELS,
@@ -110,6 +116,16 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       seconds: "Sekund",
       language: "Språk",
       country: "Land",
+      employmentCost: "Arbeidsgiverkostnad",
+      employmentCostTitle: "Total kostnad ved ansettelse",
+      employmentCostSupport: "Estimer arbeidsgiveravgift og andre påslag oppå bruttolønn.",
+      grossSalary: "Brutto årslønn",
+      regionFactor: "Regional faktor (sone)",
+      employerCharges: "Arbeidsgiverkostnader",
+      totalEmploymentCost: "Total ansettelseskostnad",
+      effectiveEmployerRate: "Effektiv arbeidsgiversats",
+      calculateCost: "Beregn kostnad",
+      costDisclaimerTitle: "Viktig",
     },
     labelsEn: englishLabelsForCountry("Norway", "public holidays"),
   },
@@ -124,6 +140,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       workdays: "arbetsdagar",
       holidays: "helgdagar",
       countdown: "countdown",
+      employmentCost: "anstallningskostnad",
     },
     labels: {
       ...EN_LABELS,
@@ -159,6 +176,16 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       seconds: "Sekunder",
       language: "Språk",
       country: "Land",
+      employmentCost: "Anställningskostnad",
+      employmentCostTitle: "Total kostnad för anställning",
+      employmentCostSupport: "Uppskatta arbetsgivaravgifter ovanpå bruttolön.",
+      grossSalary: "Bruttoårslön",
+      regionFactor: "Regional / särskild faktor",
+      employerCharges: "Arbetsgivarkostnader",
+      totalEmploymentCost: "Total anställningskostnad",
+      effectiveEmployerRate: "Effektiv arbetsgivaravgift",
+      calculateCost: "Beräkna kostnad",
+      costDisclaimerTitle: "Viktigt",
     },
     labelsEn: englishLabelsForCountry("Sweden", "public holidays"),
   },
@@ -173,6 +200,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       workdays: "arbejdsdage",
       holidays: "helligdage",
       countdown: "countdown",
+      employmentCost: "ansaettelsesomkostninger",
     },
     labels: {
       ...EN_LABELS,
@@ -208,6 +236,16 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       seconds: "Sekunder",
       language: "Sprog",
       country: "Land",
+      employmentCost: "Ansættelsesomkostninger",
+      employmentCostTitle: "Samlede omkostninger ved ansættelse",
+      employmentCostSupport: "Estimer arbejdsgiveromkostninger oven på bruttoløn.",
+      grossSalary: "Bruttoårsløn",
+      regionFactor: "Regional / branchefaktor",
+      employerCharges: "Arbejdsgiveromkostninger",
+      totalEmploymentCost: "Samlede ansættelsesomkostninger",
+      effectiveEmployerRate: "Effektiv arbejdsgiversats",
+      calculateCost: "Beregn omkostning",
+      costDisclaimerTitle: "Vigtigt",
     },
     labelsEn: englishLabelsForCountry("Denmark", "public holidays"),
   },
@@ -222,6 +260,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       workdays: "tyopaivat",
       holidays: "pyhapaivat",
       countdown: "countdown",
+      employmentCost: "tyonantajakustannukset",
     },
     labels: {
       ...EN_LABELS,
@@ -257,6 +296,16 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       seconds: "Sekuntia",
       language: "Kieli",
       country: "Maa",
+      employmentCost: "Työnantajakustannukset",
+      employmentCostTitle: "Työllistämisen kokonaiskustannus",
+      employmentCostSupport: "Arvioi työnantajan sivukulut bruttöpalkan päälle.",
+      grossSalary: "Bruttovuosipalkka",
+      regionFactor: "Alue- / toimialatekijä",
+      employerCharges: "Työnantajakustannukset",
+      totalEmploymentCost: "Kokonaiskustannus",
+      effectiveEmployerRate: "Efektiivinen työnantajaprosentti",
+      calculateCost: "Laske kustannus",
+      costDisclaimerTitle: "Tärkeää",
     },
     labelsEn: englishLabelsForCountry("Finland", "public holidays"),
   },
@@ -271,6 +320,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       workdays: "workdays",
       holidays: "holidays",
       countdown: "countdown",
+      employmentCost: "employment-cost",
     },
     labels: englishLabelsForCountry("UK", "bank holidays"),
     labelsEn: englishLabelsForCountry("UK", "bank holidays"),
@@ -286,6 +336,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       workdays: "arbeitstage",
       holidays: "feiertage",
       countdown: "countdown",
+      employmentCost: "lohnnebenkosten",
     },
     labels: {
       ...EN_LABELS,
@@ -321,6 +372,16 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       seconds: "Sekunden",
       language: "Sprache",
       country: "Land",
+      employmentCost: "Lohnnebenkosten",
+      employmentCostTitle: "Gesamtkosten der Beschäftigung",
+      employmentCostSupport: "Schätzen Sie Arbeitgeberanteile auf das Bruttogehalt.",
+      grossSalary: "Bruttojahresgehalt",
+      regionFactor: "Regionaler Faktor",
+      employerCharges: "Arbeitgeberkosten",
+      totalEmploymentCost: "Gesamte Beschäftigungskosten",
+      effectiveEmployerRate: "Effektiver Arbeitgeberanteil",
+      calculateCost: "Kosten berechnen",
+      costDisclaimerTitle: "Wichtig",
     },
     labelsEn: englishLabelsForCountry("Germany", "public holidays"),
   },
@@ -335,6 +396,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       workdays: "dni-robocze",
       holidays: "swieta",
       countdown: "countdown",
+      employmentCost: "koszt-zatrudnienia",
     },
     labels: {
       ...EN_LABELS,
@@ -370,6 +432,16 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       seconds: "Sekundy",
       language: "Język",
       country: "Kraj",
+      employmentCost: "Koszt zatrudnienia",
+      employmentCostTitle: "Całkowity koszt zatrudnienia",
+      employmentCostSupport: "Oszacuj koszty pracodawcy ponad wynagrodzenie brutto.",
+      grossSalary: "Roczne wynagrodzenie brutto",
+      regionFactor: "Czynnik regionalny / branżowy",
+      employerCharges: "Koszty pracodawcy",
+      totalEmploymentCost: "Całkowity koszt zatrudnienia",
+      effectiveEmployerRate: "Efektywna stawka pracodawcy",
+      calculateCost: "Oblicz koszt",
+      costDisclaimerTitle: "Ważne",
     },
     labelsEn: englishLabelsForCountry("Poland", "public holidays"),
   },
@@ -384,6 +456,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       workdays: "virkdagar",
       holidays: "helgidagar",
       countdown: "countdown",
+      employmentCost: "radningarkostnadur",
     },
     labels: {
       ...EN_LABELS,
@@ -419,6 +492,16 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       seconds: "Sekúndur",
       language: "Tungumál",
       country: "Land",
+      employmentCost: "Ráðningarkostnaður",
+      employmentCostTitle: "Heildarkostnaður við ráðningu",
+      employmentCostSupport: "Áætlaðu kostnað vinnuveitanda ofan á laun.",
+      grossSalary: "Árslaun brúttó",
+      regionFactor: "Svæðisbundinn þáttur",
+      employerCharges: "Kostnaður vinnuveitanda",
+      totalEmploymentCost: "Heildarkostnaður",
+      effectiveEmployerRate: "Raunverulegt hlutfall vinnuveitanda",
+      calculateCost: "Reikna kostnað",
+      costDisclaimerTitle: "Mikilvægt",
     },
     labelsEn: englishLabelsForCountry("Iceland", "public holidays"),
   },
@@ -508,6 +591,18 @@ export function switchLanguagePath(
     return year ? `${paths.holidaysPath}/${year}` : paths.holidaysPath;
   }
   if (lower.includes("countdown")) return paths.countdownPath;
+  if (
+    lower.includes("employment-cost") ||
+    lower.includes("arbeidsgiverkostnad") ||
+    lower.includes("anstallningskostnad") ||
+    lower.includes("ansaettelsesomkostninger") ||
+    lower.includes("tyonantajakustannukset") ||
+    lower.includes("lohnnebenkosten") ||
+    lower.includes("koszt-zatrudnienia") ||
+    lower.includes("radningarkostnadur")
+  ) {
+    return paths.employmentCostPath;
+  }
   return paths.homePath;
 }
 
