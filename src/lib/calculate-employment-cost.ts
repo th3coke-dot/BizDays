@@ -1,5 +1,8 @@
 import type { CountryCode } from "@/lib/countries";
 
+/** Standard working-day basis for day-rate estimates. */
+export const WORKING_DAYS_PER_YEAR = 260;
+
 export type CostComponent = {
   id: string;
   /** Display name (English; UI can map later) */
@@ -11,6 +14,8 @@ export type CostComponent = {
   fixedAnnual?: number;
   /** Only apply percentage above this annual threshold */
   thresholdAnnual?: number;
+  /** Employer pension / occupational pension contribution */
+  isPension?: boolean;
   note?: string;
 };
 
@@ -29,6 +34,13 @@ export type EmploymentCostModel = {
   defaultGross: number;
   disclaimer: string;
   disclaimerEn: string;
+  /**
+   * Default employer pension % when the resolved component list has no
+   * pension line (or as fallback before override).
+   */
+  defaultPensionPercent: number;
+  pensionName: string;
+  pensionNameNative?: string;
   /** Used when no region picker / default region */
   baseComponents: CostComponent[];
   regions?: RegionOption[];
@@ -138,19 +150,23 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
       currencySymbol: "kr",
       year: 2026,
       defaultGross: 650000,
+      defaultPensionPercent: 2,
+      pensionName: "Occupational pension (OTP)",
+      pensionNameNative: "OTP / pensjon",
       disclaimer:
-        "Forenklet modell for 2026. Inkluderer arbeidsgiveravgift etter sone og lovpålagt OTP (2 %). Yrkeskadeforsikring og tariffavtaler kommer i tillegg. Ikke skatteråd.",
+        "Forenklet modell for 2026. Inkluderer arbeidsgiveravgift etter sone og OTP/pensjon (redigerbar). Yrkeskadeforsikring og tariffavtaler kan komme i tillegg. Ikke skatteråd.",
       disclaimerEn:
-        "Simplified 2026 model. Includes regional employer's NI and mandatory OTP (2%). Occupational injury insurance and collective agreements come on top. Not tax advice.",
+        "Simplified 2026 model. Includes regional employer's NI and editable OTP/pension. Occupational injury insurance and collective agreements may come on top. Not tax advice.",
       defaultRegionId: "I",
       regions: NO_ZONES,
       baseComponents: [
         {
           id: "otp",
-          name: "Mandatory occupational pension (OTP min.)",
-          nameNative: "OTP (lovpålagt minimum)",
+          name: "Occupational pension (OTP)",
+          nameNative: "OTP / pensjon",
           ratePercent: 2,
-          note: "Minimum 2% between 1G–12G; modelled as 2% of gross for simplicity.",
+          isPension: true,
+          note: "Minimum often 2%; many schemes are higher — edit the pension field.",
         },
       ],
     },
@@ -160,10 +176,13 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
       currencySymbol: "kr",
       year: 2026,
       defaultGross: 450000,
+      defaultPensionPercent: 4.5,
+      pensionName: "Occupational pension (tjänstepension)",
+      pensionNameNative: "Tjänstepension",
       disclaimer:
-        "Arbetsgivaravgift beror främst på ålder (2026). Kollektivavtalad tjänstepension tillkommer ofta. Inte skatteråd.",
+        "Arbetsgivaravgift beror främst på ålder (2026). Tjänstepension är redigerbar (kollektivavtal varierar). Inte skatteråd.",
       disclaimerEn:
-        "Swedish employer contributions mainly vary by employee age (2026). Collective occupational pension often comes on top. Not tax advice.",
+        "Swedish employer contributions mainly vary by employee age (2026). Occupational pension is editable (collective schemes vary). Not tax advice.",
       defaultRegionId: "standard",
       regions: [
         {
@@ -208,7 +227,15 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
           ],
         },
       ],
-      baseComponents: [],
+      baseComponents: [
+        {
+          id: "tjanstepension",
+          name: "Occupational pension (tjänstepension)",
+          nameNative: "Tjänstepension",
+          ratePercent: 4.5,
+          isPension: true,
+        },
+      ],
     },
     dk: {
       country: "dk",
@@ -216,10 +243,13 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
       currencySymbol: "kr",
       year: 2026,
       defaultGross: 450000,
+      defaultPensionPercent: 8,
+      pensionName: "Employer pension contribution",
+      pensionNameNative: "Pension (arbejdsgiver)",
       disclaimer:
-        "Danmark har ingen klassisk arbejdsgiver-socialskat. Modellen inkluderer feriegodtgørelse 12,5 % samt typiske ATP/øvrige arbejdsgiverbidrag. Barsel/AES m.m. kan variere. Ikke skatteråd.",
+        "Danmark har ingen klassisk arbejdsgiver-socialskat. Modellen inkluderer feriegodtgørelse 12,5 %, ATP/øvrige bidrag og redigerbar pension. Barsel/AES m.m. kan variere. Ikke skatteråd.",
       disclaimerEn:
-        "Denmark has no classic employer social security tax. Model includes holiday allowance 12.5% plus typical ATP/other employer levies. Maternity/AES etc. may vary. Not tax advice.",
+        "Denmark has no classic employer social security tax. Model includes holiday allowance 12.5%, ATP/other levies and editable pension. Maternity/AES etc. may vary. Not tax advice.",
       baseComponents: [
         {
           id: "ferie",
@@ -234,6 +264,13 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
           ratePercent: 1.5,
           note: "Simplified combined estimate for ATP and related schemes.",
         },
+        {
+          id: "pension",
+          name: "Employer pension contribution",
+          nameNative: "Pension (arbejdsgiver)",
+          ratePercent: 8,
+          isPension: true,
+        },
       ],
     },
     fi: {
@@ -242,10 +279,13 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
       currencySymbol: "€",
       year: 2026,
       defaultGross: 45000,
+      defaultPensionPercent: 17.4,
+      pensionName: "Earnings-related pension (TyEL)",
+      pensionNameNative: "TyEL (työnantaja)",
       disclaimer:
-        "TyEL-maksu on yrityskohtainen. Malli sisältää tyypillisiä työnantajan sivukuluja; tapaturmavakuutus vaihtelee toimialan mukaan. Ei veroneuvontaa.",
+        "TyEL on yrityskohtainen ja muokattavissa. Malli sisältää myös muita työnantajan sivukuluja. Ei veroneuvontaa.",
       disclaimerEn:
-        "TyEL is company-specific. Model uses typical employer side costs; accident insurance varies by industry. Not tax advice.",
+        "TyEL is company-specific and editable. Model also includes other employer side costs. Not tax advice.",
       defaultRegionId: "avg",
       regions: [
         {
@@ -258,6 +298,7 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
               name: "Earnings-related pension (TyEL, employer)",
               nameNative: "TyEL (työnantaja)",
               ratePercent: 17.4,
+              isPension: true,
             },
           ],
         },
@@ -271,6 +312,7 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
               name: "Earnings-related pension (TyEL, employer)",
               nameNative: "TyEL (työnantaja)",
               ratePercent: 16.0,
+              isPension: true,
             },
           ],
         },
@@ -284,6 +326,7 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
               name: "Earnings-related pension (TyEL, employer)",
               nameNative: "TyEL (työnantaja)",
               ratePercent: 19.0,
+              isPension: true,
             },
           ],
         },
@@ -303,10 +346,12 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
       currencySymbol: "£",
       year: 2026,
       defaultGross: 40000,
+      defaultPensionPercent: 3,
+      pensionName: "Workplace pension (employer)",
       disclaimer:
-        "UK Class 1 employer NI applies UK-wide (England, Scotland, Wales, Northern Ireland). Model uses 15% above a £5,000 secondary threshold (simplified) plus 3% auto-enrolment pension. Employment Allowance is not applied. Not tax advice.",
+        "UK Class 1 employer NI applies UK-wide. Model uses 15% above a £5,000 secondary threshold (simplified) plus editable workplace pension (auto-enrolment minimum often 3%). Employment Allowance is not applied. Not tax advice.",
       disclaimerEn:
-        "UK Class 1 employer NI applies UK-wide (England, Scotland, Wales, Northern Ireland). Model uses 15% above a £5,000 secondary threshold (simplified) plus 3% auto-enrolment pension. Employment Allowance is not applied. Not tax advice.",
+        "UK Class 1 employer NI applies UK-wide. Model uses 15% above a £5,000 secondary threshold (simplified) plus editable workplace pension (auto-enrolment minimum often 3%). Employment Allowance is not applied. Not tax advice.",
       baseComponents: [
         {
           id: "ni",
@@ -316,8 +361,9 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
         },
         {
           id: "pension",
-          name: "Auto-enrolment pension (employer min.)",
+          name: "Workplace pension (employer)",
           ratePercent: 3,
+          isPension: true,
         },
       ],
     },
@@ -327,10 +373,13 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
       currencySymbol: "€",
       year: 2026,
       defaultGross: 50000,
+      defaultPensionPercent: 4,
+      pensionName: "Company pension (bAV)",
+      pensionNameNative: "Betriebliche Altersvorsorge (bAV)",
       disclaimer:
-        "Bundesweite Arbeitgeberanteile (ca. 20 %). Zusatzbeitrag Krankenkasse und Pflegeversicherung können leicht abweichen. Keine Steuerberatung.",
+        "Bundesweite Arbeitgeberanteile (ca. 20 %) plus editierbare bAV. Zusatzbeitrag Krankenkasse und Pflegeversicherung können abweichen. Keine Steuerberatung.",
       disclaimerEn:
-        "Nationwide employer shares (~20%). Health fund additional contribution and long-term care can vary slightly. Not tax advice.",
+        "Nationwide employer shares (~20%) plus editable company pension (bAV). Health fund additional contribution and long-term care can vary. Not tax advice.",
       regions: [
         {
           id: "standard",
@@ -398,7 +447,15 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
         },
       ],
       defaultRegionId: "standard",
-      baseComponents: [],
+      baseComponents: [
+        {
+          id: "bav",
+          name: "Company pension (bAV)",
+          nameNative: "Betriebliche Altersvorsorge (bAV)",
+          ratePercent: 4,
+          isPension: true,
+        },
+      ],
     },
     pl: {
       country: "pl",
@@ -406,10 +463,13 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
       currencySymbol: "zł",
       year: 2026,
       defaultGross: 90000,
+      defaultPensionPercent: 1.5,
+      pensionName: "PPK / occupational pension (employer)",
+      pensionNameNative: "PPK / emerytura (pracodawca)",
       disclaimer:
-        "Składki pracodawcy ZUS + FP/FGŚP oraz przeciętna składka wypadkowa. Składka wypadkowa zależy od branży (0,67–3,33 %). To nie jest porada podatkowa.",
+        "Składki pracodawcy ZUS + FP/FGŚP, składka wypadkowa oraz edytowalne PPK. To nie jest porada podatkowa.",
       disclaimerEn:
-        "Employer ZUS + FP/FGŚP plus average accident contribution. Accident rate depends on industry (0.67–3.33%). Not tax advice.",
+        "Employer ZUS + FP/FGŚP, accident contribution, and editable PPK pension. Not tax advice.",
       regions: [
         {
           id: "avg",
@@ -498,7 +558,15 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
         },
       ],
       defaultRegionId: "avg",
-      baseComponents: [],
+      baseComponents: [
+        {
+          id: "ppk",
+          name: "PPK / occupational pension (employer)",
+          nameNative: "PPK / emerytura (pracodawca)",
+          ratePercent: 1.5,
+          isPension: true,
+        },
+      ],
     },
     is: {
       country: "is",
@@ -506,10 +574,13 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
       currencySymbol: "kr",
       year: 2026,
       defaultGross: 9000000,
+      defaultPensionPercent: 11.5,
+      pensionName: "Employer pension contribution",
+      pensionNameNative: "Lífeyrissjóður (vinnuveitandi)",
       disclaimer:
-        "Tryggingagjald og dæmigerð lífeyrissjóðsgreiðsla vinnuveitanda. Samið getur verið um hærri lífeyrisiðgjöld. Ekki skattaráðgjöf.",
+        "Tryggingagjald og breytanlegt lífeyrisiðgjald vinnuveitanda. Samið getur verið um hærri iðgjöld. Ekki skattaráðgjöf.",
       disclaimerEn:
-        "Social security tax plus typical employer pension contribution. Collective agreements may set higher pension rates. Not tax advice.",
+        "Social security tax plus editable employer pension contribution. Collective agreements may set higher rates. Not tax advice.",
       baseComponents: [
         {
           id: "trygging",
@@ -519,9 +590,10 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
         },
         {
           id: "pension",
-          name: "Employer pension contribution (typical)",
+          name: "Employer pension contribution",
           nameNative: "Lífeyrissjóður (vinnuveitandi)",
           ratePercent: 11.5,
+          isPension: true,
         },
       ],
     },
@@ -539,8 +611,21 @@ export type EmploymentCostResult = {
   employerCost: number;
   total: number;
   effectiveRatePercent: number;
+  pensionPercent: number;
   lines: EmploymentCostLine[];
   currency: string;
+  /** Period rates based on total employment cost */
+  dayRate: number;
+  weekRate: number;
+  monthRate: number;
+  yearRate: number;
+};
+
+export type EmploymentCostOptions = {
+  regionId?: string;
+  lang?: "native" | "en";
+  /** Override employer pension contribution (% of gross) */
+  pensionPercent?: number;
 };
 
 function resolveComponents(
@@ -553,15 +638,66 @@ function resolveComponents(
   return [...(region?.components ?? []), ...model.baseComponents];
 }
 
+export function getDefaultPensionPercent(
+  country: CountryCode,
+  regionId?: string,
+): number {
+  const model = EMPLOYMENT_COST_MODELS[country];
+  const components = resolveComponents(model, regionId);
+  const pension = components.find(
+    (c) => c.isPension && typeof c.ratePercent === "number",
+  );
+  if (pension && typeof pension.ratePercent === "number") {
+    return pension.ratePercent;
+  }
+  return model.defaultPensionPercent;
+}
+
+function applyPensionOverride(
+  model: EmploymentCostModel,
+  components: CostComponent[],
+  pensionPercent: number,
+): CostComponent[] {
+  const withoutPension = components.filter((c) => !c.isPension);
+  const template = components.find((c) => c.isPension);
+  return [
+    ...withoutPension,
+    {
+      id: template?.id ?? "pension",
+      name: template?.name ?? model.pensionName,
+      nameNative: template?.nameNative ?? model.pensionNameNative,
+      ratePercent: pensionPercent,
+      isPension: true,
+    },
+  ];
+}
+
 export function calculateEmploymentCost(
   country: CountryCode,
   grossAnnual: number,
-  regionId?: string,
-  lang: "native" | "en" = "en",
+  regionIdOrOptions?: string | EmploymentCostOptions,
+  langArg: "native" | "en" = "en",
 ): EmploymentCostResult {
+  const options: EmploymentCostOptions =
+    typeof regionIdOrOptions === "object" && regionIdOrOptions !== null
+      ? regionIdOrOptions
+      : { regionId: regionIdOrOptions, lang: langArg };
+
   const model = EMPLOYMENT_COST_MODELS[country];
+  const lang = options.lang ?? "en";
   const gross = Number.isFinite(grossAnnual) && grossAnnual > 0 ? grossAnnual : 0;
-  const components = resolveComponents(model, regionId);
+  const defaultPension = getDefaultPensionPercent(country, options.regionId);
+  const pensionPercent =
+    typeof options.pensionPercent === "number" &&
+    Number.isFinite(options.pensionPercent)
+      ? Math.max(0, options.pensionPercent)
+      : defaultPension;
+
+  const components = applyPensionOverride(
+    model,
+    resolveComponents(model, options.regionId),
+    pensionPercent,
+  );
   const lines: EmploymentCostLine[] = [];
   let employerCost = 0;
 
@@ -598,7 +734,12 @@ export function calculateEmploymentCost(
     employerCost,
     total,
     effectiveRatePercent,
+    pensionPercent,
     lines,
     currency: model.currency,
+    dayRate: Math.round(total / WORKING_DAYS_PER_YEAR),
+    weekRate: Math.round(total / 52),
+    monthRate: Math.round(total / 12),
+    yearRate: total,
   };
 }
