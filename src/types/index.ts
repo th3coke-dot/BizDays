@@ -29,12 +29,28 @@ export interface JunePayslipInput {
   monthlySalary: number;
   /** Feriepenger paid out in June */
   feriepenger: number;
-  /** Deduction replacing salary while on holiday (often = monthly salary) */
-  feriepengetrekk: number;
-  /** Withholding tax percent */
-  taxPercent: number;
-  /** Employee pension deduction percent of taxable/gross base */
-  pensionPercent: number;
+  /**
+   * Optional override for feriepengetrekk.
+   * When omitted, calculated as vacationDays × (monthlySalary / juneWorkdays).
+   */
+  feriepengetrekk?: number;
+  /** Vacation days deducted from June salary (default 25) */
+  vacationDays?: number;
+  /** Working days in June used for day-rate (optional override) */
+  juneWorkdays?: number;
+  /** Year used to count June workdays */
+  year?: number;
+  /** Withholding mode */
+  taxMode?: "prosent" | "tabell";
+  /** Withholding tax percent (prosent mode) */
+  taxPercent?: number;
+  /** Simplified tax table id (tabell mode) */
+  taxTableId?: "7100" | "8000" | "7300";
+  /**
+   * When true, feriepenger are excluded from the tax base
+   * (common with tabelltrekk in June).
+   */
+  taxFreeFeriepenger?: boolean;
 }
 
 export interface JunePayslipLine {
@@ -50,10 +66,16 @@ export interface JunePayslipResult {
   feriepengetrekk: number;
   grossBeforeTax: number;
   taxAmount: number;
-  pensionAmount: number;
   netPay: number;
   taxPercent: number;
-  pensionPercent: number;
+  taxMode: "prosent" | "tabell";
+  taxTableId: "7100" | "8000" | "7300";
+  taxFreeFeriepenger: boolean;
+  taxableBase: number;
+  vacationDays: number;
+  juneWorkdays: number;
+  dailyRate: number;
+  year: number;
   lines: JunePayslipLine[];
 }
 

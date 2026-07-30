@@ -37,10 +37,10 @@ export default function FeriepengerPage() {
         </p>
         <p className="mt-2">
           Grunnlaget er vanligvis fjorårets lønn, og feriepengene utbetales ofte
-          i juni. Juni-lønnsslippen er en forenklet simulering: mange får
-          feriepenger utbetalt samtidig som ordinær juni-lønn trekkes
-          (feriepengetrekk). Faktisk skattetrekk følger skattetabell, ikke bare
-          en fast prosent. Planlegg ferien med{" "}
+          i juni. Juni-lønnsslippen er en forenklet simulering: feriepengetrekk
+          for 25 feriedager (dagssats × dager), pluss prosenttrekk eller
+          forenklet skattetabell. Arbeidsgivers pensjonskostnad vises ikke på
+          slippen. Planlegg ferien med{" "}
           <Link
             href="/arbeidsdager"
             className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
