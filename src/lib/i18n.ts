@@ -41,6 +41,14 @@ export type UiLabels = {
   effectiveEmployerRate: string;
   calculateCost: string;
   costDisclaimerTitle: string;
+  pensionRate: string;
+  pensionRateHint: string;
+  rateBreakdown: string;
+  dayRate: string;
+  weekRate: string;
+  monthRate: string;
+  yearRate: string;
+  workingDaysBasis: string;
 };
 
 /** Shared English UI for every country. */
@@ -87,6 +95,14 @@ export const EN_LABELS: UiLabels = {
   effectiveEmployerRate: "Effective employer rate",
   calculateCost: "Calculate cost",
   costDisclaimerTitle: "Important",
+  pensionRate: "Employer pension (%)",
+  pensionRateHint: "Edit to match your scheme — defaults vary by country.",
+  rateBreakdown: "Cost per period",
+  dayRate: "Day rate",
+  weekRate: "Week rate",
+  monthRate: "Month rate",
+  yearRate: "Year rate",
+  workingDaysBasis: "Day rate uses 260 working days per year.",
 };
 
 export function englishLabelsForCountry(
