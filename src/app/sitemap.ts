@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { COUNTRY_LIST } from "@/lib/countries";
+import { COUNTRY_LIST, getCountryPaths } from "@/lib/countries";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.bizdayz.com";
 
@@ -13,29 +13,56 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/feriepenger",
     "/countdown",
     "/om",
+    "/en",
   ];
 
-  const countryRoutes = COUNTRY_LIST.filter((c) => c.code !== "no").flatMap(
-    (c) => [
-      c.homePath,
-      c.workdaysPath,
-      c.holidaysPath,
-      c.countdownPath,
-      `${c.holidaysPath}/2026`,
-      `${c.holidaysPath}/2027`,
-    ],
-  );
+  const routes = [...noRoutes];
 
-  const routes = [...noRoutes, ...countryRoutes];
+  for (const c of COUNTRY_LIST) {
+    if (c.code === "no") {
+      // English Norway
+      const en = getCountryPaths("no", "en");
+      routes.push(
+        en.homePath,
+        en.workdaysPath,
+        en.holidaysPath,
+        `${en.holidaysPath}/2026`,
+        `${en.holidaysPath}/2027`,
+        en.countdownPath,
+      );
+      continue;
+    }
+    const native = getCountryPaths(c.code, "native");
+    routes.push(
+      native.homePath,
+      native.workdaysPath,
+      native.holidaysPath,
+      `${native.holidaysPath}/2026`,
+      `${native.holidaysPath}/2027`,
+      native.countdownPath,
+    );
+    if (c.code !== "uk") {
+      const en = getCountryPaths(c.code, "en");
+      routes.push(
+        en.homePath,
+        en.workdaysPath,
+        en.holidaysPath,
+        `${en.holidaysPath}/2026`,
+        `${en.holidaysPath}/2027`,
+        en.countdownPath,
+      );
+    }
+  }
+
   const lastModified = new Date();
+  const unique = Array.from(new Set(routes));
 
-  return routes.map((route) => ({
+  return unique.map((route) => ({
     url: `${siteUrl}${route}`,
     lastModified,
     changeFrequency: route === "" ? "weekly" : "monthly",
-    priority:
-      route === "" || route.endsWith("arbeidsdager") || route.endsWith("arbetsdagar")
-        ? 1
-        : 0.7,
+    priority: route === "" || route.includes("workday") || route.includes("arbeids")
+      ? 1
+      : 0.7,
   }));
 }

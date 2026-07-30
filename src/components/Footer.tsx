@@ -7,6 +7,7 @@ const footerLinks = [
   { href: "/feriepenger", label: "Feriepenger" },
   { href: "/countdown", label: "Countdown" },
   { href: "/om", label: "Om BizDays" },
+  { href: "/en", label: "English" },
 ];
 
 export function Footer() {
@@ -20,12 +21,14 @@ export function Footer() {
             Biz<span className="text-[var(--accent-soft)]">Days</span>
           </p>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-300">
-            Arbeidsdager og helligdager for Norge, Sverige, Danmark og Finland.
+            Workdays, holidays and countdowns for Norway, Sweden, Denmark,
+            Finland, UK, Germany, Poland and Iceland — with English for every
+            country.
           </p>
         </div>
         <div>
           <p className="text-sm font-semibold uppercase tracking-wider text-slate-400">
-            Norge
+            Norway
           </p>
           <ul className="mt-4 grid gap-2">
             {footerLinks.map((link) => (
@@ -42,16 +45,16 @@ export function Footer() {
         </div>
         <div>
           <p className="text-sm font-semibold uppercase tracking-wider text-slate-400">
-            Land
+            Countries
           </p>
-          <ul className="mt-4 grid gap-2">
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
             {COUNTRY_LIST.map((c) => (
               <li key={c.code}>
                 <Link
-                  href={c.homePath}
+                  href={c.code === "no" ? "/" : `/${c.code}`}
                   className="text-sm text-slate-200 transition hover:text-white"
                 >
-                  {c.nativeName}
+                  {c.name}
                 </Link>
               </li>
             ))}
@@ -60,8 +63,8 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p>© {year} BizDays. Alle rettigheter forbeholdt.</p>
-          <p>NO · SE · DK · FI</p>
+          <p>© {year} BizDays. All rights reserved.</p>
+          <p>NO · SE · DK · FI · UK · DE · PL · IS</p>
         </div>
       </div>
     </footer>

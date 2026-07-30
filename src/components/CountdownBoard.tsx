@@ -4,18 +4,27 @@ import { useEffect, useMemo, useState } from "react";
 import { Share2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
-import { COUNTRIES, type CountryCode } from "@/lib/countries";
+import {
+  getCountryPaths,
+  type AppLanguage,
+  type CountryCode,
+  resolveLabels,
+} from "@/lib/countries";
 import { diffParts, getCountdownTargets } from "@/lib/countdown";
 import { cn, formatDateNO } from "@/lib/utils";
 
 type Props = {
   country?: CountryCode;
+  lang?: AppLanguage;
 };
 
-export function CountdownBoard({ country = "no" }: Props) {
-  const labels = COUNTRIES[country].labels;
-  const path = COUNTRIES[country].countdownPath;
-  const targets = useMemo(() => getCountdownTargets(country), [country]);
+export function CountdownBoard({ country = "no", lang = "native" }: Props) {
+  const labels = resolveLabels(country, lang);
+  const path = getCountryPaths(country, lang).countdownPath;
+  const targets = useMemo(
+    () => getCountdownTargets(country, new Date(), lang),
+    [country, lang],
+  );
   const [activeId, setActiveId] = useState<string | null>(null);
   const [now, setNow] = useState(() => new Date());
   const [copied, setCopied] = useState(false);
@@ -34,15 +43,7 @@ export function CountdownBoard({ country = "no" }: Props) {
   const parts = diffParts(active.date, now);
 
   async function share() {
-    const unit =
-      country === "se"
-        ? "dagar"
-        : country === "dk"
-          ? "dage"
-          : country === "fi"
-            ? "päivää"
-            : "dager";
-    const text = `${parts.days} ${unit} → ${active.name} (${formatDateNO(active.date)}) – BizDays`;
+    const text = `${parts.days} → ${active.name} (${formatDateNO(active.date)}) – BizDays`;
     const url =
       typeof window !== "undefined"
         ? `${window.location.origin}${path}?t=${active.id}`

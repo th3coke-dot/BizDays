@@ -112,27 +112,28 @@ export default function HomePage() {
             Flere land
           </h2>
           <p className="mt-2 text-[var(--muted)]">
-            Samme verktøy for Sverige, Danmark og Finland.
+            Sverige, Danmark, Finland, UK, Tyskland, Polen og Island — alle med
+            engelsk språkvalg.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href="/se"
-              className="rounded-lg border border-[var(--border)] bg-white/80 px-4 py-3 text-sm font-semibold text-[var(--primary)] hover:border-[var(--accent)]"
-            >
-              Sverige
-            </Link>
-            <Link
-              href="/dk"
-              className="rounded-lg border border-[var(--border)] bg-white/80 px-4 py-3 text-sm font-semibold text-[var(--primary)] hover:border-[var(--accent)]"
-            >
-              Danmark
-            </Link>
-            <Link
-              href="/fi"
-              className="rounded-lg border border-[var(--border)] bg-white/80 px-4 py-3 text-sm font-semibold text-[var(--primary)] hover:border-[var(--accent)]"
-            >
-              Suomi / Finland
-            </Link>
+            {[
+              ["/se", "Sverige"],
+              ["/dk", "Danmark"],
+              ["/fi", "Suomi"],
+              ["/uk", "UK"],
+              ["/de", "Deutschland"],
+              ["/pl", "Polska"],
+              ["/is", "Ísland"],
+              ["/en", "English"],
+            ].map(([href, label]) => (
+              <Link
+                key={href}
+                href={href}
+                className="rounded-lg border border-[var(--border)] bg-white/80 px-4 py-3 text-sm font-semibold text-[var(--primary)] hover:border-[var(--accent)]"
+              >
+                {label}
+              </Link>
+            ))}
           </div>
         </section>
 

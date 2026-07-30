@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { CountdownBoard } from "@/components/CountdownBoard";
 import { HolidayList } from "@/components/HolidayList";
 import { WorkdaysCalculator } from "@/components/WorkdaysCalculator";
 import { getHolidaysForCountryYear } from "@/data/holidays";
-import type { CountryConfig } from "@/lib/countries";
+import type { LocalizedCountry } from "@/lib/countries";
 import { formatDateNO } from "@/lib/utils";
 import type { HolidayYear } from "@/types";
 
-export function CountryWorkdaysPage({ country }: { country: CountryConfig }) {
+export function CountryWorkdaysPage({ country }: { country: LocalizedCountry }) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-12">
       <header className="mb-8">
         <p className="text-sm font-medium text-[var(--muted)]">
-          {country.nativeName}
+          {country.lang === "en" ? country.name : country.nativeName}
         </p>
         <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-[var(--primary)] sm:text-4xl">
           {country.labels.calculateWorkdays}
@@ -21,7 +22,7 @@ export function CountryWorkdaysPage({ country }: { country: CountryConfig }) {
           {country.labels.explanation}
         </p>
       </header>
-      <WorkdaysCalculator country={country.code} />
+      <WorkdaysCalculator country={country.code} labels={country.labels} />
       <aside className="mt-10 text-sm text-[var(--muted)]">
         <Link
           href={country.holidaysPath}
@@ -34,13 +35,13 @@ export function CountryWorkdaysPage({ country }: { country: CountryConfig }) {
   );
 }
 
-export function CountryHolidaysIndex({ country }: { country: CountryConfig }) {
+export function CountryHolidaysIndex({ country }: { country: LocalizedCountry }) {
   const years: HolidayYear[] = [2026, 2027];
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-12">
       <header className="mb-10">
         <p className="text-sm font-medium text-[var(--muted)]">
-          {country.nativeName}
+          {country.lang === "en" ? country.name : country.nativeName}
         </p>
         <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-[var(--primary)] sm:text-4xl">
           {country.labels.holidays}
@@ -59,9 +60,7 @@ export function CountryHolidaysIndex({ country }: { country: CountryConfig }) {
               <p className="font-[family-name:var(--font-display)] text-3xl font-bold text-[var(--primary)]">
                 {year}
               </p>
-              <p className="mt-2 text-sm text-[var(--muted)]">
-                {holidays.length}
-              </p>
+              <p className="mt-2 text-sm text-[var(--muted)]">{holidays.length}</p>
               <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)]">
                 {country.labels.yearOverview}
                 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
@@ -92,7 +91,7 @@ export function CountryHolidaysYear({
   country,
   year,
 }: {
-  country: CountryConfig;
+  country: LocalizedCountry;
   year: HolidayYear;
 }) {
   const holidays = getHolidaysForCountryYear(country.code, year);
@@ -109,9 +108,6 @@ export function CountryHolidaysYear({
         <h1 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-[var(--primary)] sm:text-4xl">
           {country.labels.holidays} {year}
         </h1>
-        <p className="mt-3 text-[var(--muted)]">
-          {country.nativeName} · {holidays.length}
-        </p>
       </header>
       <div className="mb-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
         {holidays.map((h) => (
@@ -125,9 +121,7 @@ export function CountryHolidaysYear({
             <p className="mt-1 font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--primary)]">
               {formatDateNO(h.date, "d. MMM")}
             </p>
-            <p className="mt-2 text-xs font-medium text-[var(--muted)]">
-              {h.name}
-            </p>
+            <p className="mt-2 text-xs font-medium text-[var(--muted)]">{h.name}</p>
           </div>
         ))}
       </div>
@@ -139,6 +133,31 @@ export function CountryHolidaysYear({
         fixedLabel={country.labels.fixed}
         movableLabel={country.labels.movable}
       />
+    </div>
+  );
+}
+
+export function CountryCountdownPage({ country }: { country: LocalizedCountry }) {
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-12">
+      <header className="mb-8">
+        <p className="text-sm font-medium text-[var(--muted)]">
+          {country.lang === "en" ? country.name : country.nativeName}
+        </p>
+        <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-[var(--primary)] sm:text-4xl">
+          {country.labels.countdown}
+        </h1>
+      </header>
+      <CountdownBoard country={country.code} lang={country.lang} />
+      <p className="mt-8 text-sm text-[var(--muted)]">
+        <Link href={country.workdaysPath} className="text-[var(--accent)] hover:underline">
+          {country.labels.workdays}
+        </Link>
+        {" · "}
+        <Link href={country.holidaysPath} className="text-[var(--accent)] hover:underline">
+          {country.labels.holidays}
+        </Link>
+      </p>
     </div>
   );
 }

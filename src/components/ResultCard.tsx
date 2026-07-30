@@ -1,11 +1,11 @@
 import { CalendarDays, Palmtree, PartyPopper } from "lucide-react";
 import type { WorkdayResult } from "@/types";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
-import type { CountryConfig } from "@/lib/countries";
+import type { UiLabels } from "@/lib/i18n";
 
 interface ResultCardProps {
   result: WorkdayResult;
-  labels?: CountryConfig["labels"];
+  labels?: Partial<UiLabels>;
 }
 
 const defaultLabels = {
