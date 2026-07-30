@@ -62,7 +62,11 @@ export default function Helligdager2027Page() {
         ))}
       </div>
 
-      <HolidayList holidays={holidays} title="Alle helligdager 2027" />
+      <HolidayList
+        holidays={holidays}
+        title="Alle helligdager 2027"
+        showWeekendBadge
+      />
       <RelatedLinks keys={["arbeidsdager", "helligdager", "feriepenger"]} />
     </div>
   );

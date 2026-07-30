@@ -30,15 +30,15 @@
 
 ## Manuelt – domene & deploy
 
-- [ ] Domenesoppsett (A/CNAME) for bizdays.com / .no
+- [ ] Domenesoppsett (A/CNAME) for bizdayz.com / .no
 - [ ] Vercel: primary domain + 301 fra .no
 - [ ] GitHub-repo + push + Vercel deploy
 - [ ] Sett env-variabler i Vercel (se `.env.example`)
 - [ ] Test mobil + desktop i produksjon
-- [ ] Send inn sitemap: `https://bizdays.com/sitemap.xml`
+- [ ] Send inn sitemap: `https://www.bizdayz.com/sitemap.xml`
 
 ## Fase 7 – etter lansering
 
 - [ ] Overvåk trafikk i GA4 / Search Console
-- [ ] Samle feedback via hei@bizdays.com
+- [ ] Samle feedback via hei@bizdayz.com
 - [ ] Neste funksjoner: flere land, engelsk, ICS-eksport

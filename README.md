@@ -33,9 +33,9 @@ npm run dev
 
 ## Domene (manuelt)
 
-1. Pek `bizdays.com` og `bizdays.no` til Vercel
-2. Sett `bizdays.com` som primary
-3. 301-redirect fra `bizdays.no` → `https://bizdays.com`
+1. Pek `bizdayz.com` og `bizdays.no` til Vercel
+2. Sett `bizdayz.com` som primary
+3. 301-redirect fra `bizdays.no` → `https://www.bizdayz.com`
 4. Kopier `.env.example` → sett verdier i Vercel
 
 ## Analytics & annonser

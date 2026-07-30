@@ -76,6 +76,7 @@ function YearPreview({ year }: { year: 2026 | 2027 }) {
         holidays={holidays}
         title={`Helligdager ${year}`}
         emptyText="Ingen data"
+        showWeekendBadge
       />
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
         {holidays.slice(0, 6).map((h) => (

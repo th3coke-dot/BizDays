@@ -33,7 +33,11 @@ export default function FeriepengerPage() {
         <p className="mt-2">
           Lovfestet minstesats er 10,2 %. Mange tariffavtaler bruker 12 %.
           Arbeidstakere over 60 år har rett til et tillegg på 2,3 prosentpoeng
-          (her vist som 12,5 % med lovfestet basis). Planlegg ferien med{" "}
+          (her vist som 12,5 % med lovfestet basis).
+        </p>
+        <p className="mt-2">
+          Grunnlaget er vanligvis fjorårets lønn, og feriepengene utbetales ofte
+          i juni – med mindre dere har annen avtale. Planlegg ferien med{" "}
           <Link
             href="/arbeidsdager"
             className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"

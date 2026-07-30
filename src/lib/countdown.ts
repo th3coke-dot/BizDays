@@ -29,7 +29,7 @@ export function getCountdownTargets(from = new Date()): CountdownTarget[] {
       id: "sommerferie",
       name: "Sommerferie",
       date: toISO(summer),
-      description: "Mot skolestart sommerferie (20. juni)",
+      description: `Neste sommerferie (20. juni ${summer.getFullYear()})`,
     },
     {
       id: "17mai",

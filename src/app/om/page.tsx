@@ -32,10 +32,10 @@ export default function OmPage() {
         <p>
           Har du spørsmål, feil eller ønsker? Send en e-post til{" "}
           <a
-            href="mailto:hei@bizdays.com"
+            href="mailto:hei@bizdayz.com"
             className="font-semibold text-[var(--accent)] underline-offset-2 hover:underline"
           >
-            hei@bizdays.com
+            hei@bizdayz.com
           </a>
           .
         </p>
@@ -50,7 +50,7 @@ export default function OmPage() {
           av helligdager, eller noe annet. Jo mer konkret, jo bedre.
         </p>
         <a
-          href="mailto:hei@bizdays.com?subject=Feedback%20BizDays"
+          href="mailto:hei@bizdayz.com?subject=Feedback%20BizDays"
           className="mt-4 inline-flex h-11 items-center rounded-lg bg-[var(--accent)] px-5 text-sm font-semibold text-white transition hover:bg-[var(--accent-hover)]"
         >
           Send feedback
