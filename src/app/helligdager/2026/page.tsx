@@ -61,7 +61,11 @@ export default function Helligdager2026Page() {
         ))}
       </div>
 
-      <HolidayList holidays={holidays} title="Alle helligdager 2026" />
+      <HolidayList
+        holidays={holidays}
+        title="Alle helligdager 2026"
+        showWeekendBadge
+      />
       <RelatedLinks keys={["arbeidsdager", "helligdager", "countdown"]} />
     </div>
   );

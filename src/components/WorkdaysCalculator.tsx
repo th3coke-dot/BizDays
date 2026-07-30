@@ -17,26 +17,31 @@ function defaultRange() {
   return { start: toISODate(start), end: toISODate(end) };
 }
 
+function compute(start: string, end: string): {
+  result: WorkdayResult | null;
+  error: string | null;
+} {
+  if (!start || !end) {
+    return { result: null, error: "Velg både fra- og til-dato." };
+  }
+  if (end < start) {
+    return { result: null, error: "Til-dato må være etter fra-dato." };
+  }
+  return { result: calculateWorkdays(start, end), error: null };
+}
+
 export function WorkdaysCalculator() {
   const defaults = defaultRange();
   const [startDate, setStartDate] = useState(defaults.start);
   const [endDate, setEndDate] = useState(defaults.end);
-  const [result, setResult] = useState<WorkdayResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const initial = compute(defaults.start, defaults.end);
+  const [result, setResult] = useState<WorkdayResult | null>(initial.result);
+  const [error, setError] = useState<string | null>(initial.error);
 
-  function handleCalculate() {
-    if (!startDate || !endDate) {
-      setError("Velg både fra- og til-dato.");
-      setResult(null);
-      return;
-    }
-    if (endDate < startDate) {
-      setError("Til-dato må være etter fra-dato.");
-      setResult(null);
-      return;
-    }
-    setError(null);
-    setResult(calculateWorkdays(startDate, endDate));
+  function apply(nextStart: string, nextEnd: string) {
+    const next = compute(nextStart, nextEnd);
+    setError(next.error);
+    setResult(next.result);
   }
 
   return (
@@ -44,14 +49,20 @@ export function WorkdaysCalculator() {
       <Card>
         <CardTitle>Velg periode</CardTitle>
         <CardDescription>
-          Tell arbeidsdager mellom to datoer. Helligdager og helger trekkes fra.
+          Velg fra- og til-dato. Helger og norske helligdager trekkes fra.
         </CardDescription>
         <div className="mt-5">
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}
-            onStartChange={setStartDate}
-            onEndChange={setEndDate}
+            onStartChange={(value) => {
+              setStartDate(value);
+              apply(value, endDate);
+            }}
+            onEndChange={(value) => {
+              setEndDate(value);
+              apply(startDate, value);
+            }}
           />
         </div>
         {error && (
@@ -60,7 +71,12 @@ export function WorkdaysCalculator() {
           </p>
         )}
         <div className="mt-5">
-          <Button type="button" onClick={handleCalculate} size="lg">
+          <Button
+            type="button"
+            onClick={() => apply(startDate, endDate)}
+            size="lg"
+            className="w-full sm:w-auto"
+          >
             Beregn arbeidsdager
           </Button>
         </div>
@@ -69,7 +85,12 @@ export function WorkdaysCalculator() {
       {result && (
         <>
           <ResultCard result={result} />
-          <HolidayList holidays={result.holidayList} />
+          <HolidayList
+            holidays={result.holidayList}
+            title="Røde dager trukket fra"
+            emptyText="Ingen helligdager i valgt periode."
+            showWeekendBadge
+          />
         </>
       )}
     </div>

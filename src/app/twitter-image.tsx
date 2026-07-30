@@ -51,7 +51,7 @@ export default function TwitterImage() {
             display: "flex",
           }}
         >
-          bizdays.com
+          bizdayz.com
         </div>
       </div>
     ),

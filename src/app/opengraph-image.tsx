@@ -50,7 +50,7 @@ export default function OpenGraphImage() {
             display: "flex",
           }}
         >
-          bizdays.com
+          bizdayz.com
         </div>
       </div>
     ),

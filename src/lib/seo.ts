@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://bizdays.com";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.bizdayz.com";
 export const SITE_NAME = "BizDays";
 export const SITE_LOCALE = "nb_NO";
 

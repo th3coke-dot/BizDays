@@ -32,8 +32,8 @@ export default function ArbeidsdagerPage() {
       <aside className="mt-10 rounded-2xl border border-[var(--border)] bg-white/60 p-5 text-sm leading-relaxed text-[var(--muted)]">
         <p className="font-semibold text-[var(--primary)]">Slik teller vi</p>
         <p className="mt-2">
-          En arbeidsdag er en hverdag (man–fre) som ikke er helligdag. Helger og
-          røde dager vises separat, så du ser hele bildet for perioden. Se også{" "}
+          Helger og norske helligdager er trukket fra. En arbeidsdag er en
+          hverdag (man–fre) som ikke er helligdag. Se også{" "}
           <Link
             href="/helligdager"
             className="font-medium text-[var(--accent)] underline-offset-2 hover:underline"
