@@ -4,25 +4,41 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import {
+  COUNTRIES,
+  COUNTRY_LIST,
+  getCountryFromPath,
+  type CountryCode,
+} from "@/lib/countries";
 import { cn } from "@/lib/utils";
 
-const links = [
-  { href: "/arbeidsdager", label: "Arbeidsdager" },
-  { href: "/helligdager", label: "Helligdager" },
-  { href: "/feriepenger", label: "Feriepenger" },
-  { href: "/countdown", label: "Countdown" },
-  { href: "/om", label: "Om" },
-];
+function navFor(country: CountryCode) {
+  const c = COUNTRIES[country];
+  const links = [
+    { href: c.workdaysPath, label: c.labels.workdays },
+    { href: c.holidaysPath, label: c.labels.holidays },
+  ];
+  if (country === "no") {
+    links.push(
+      { href: "/feriepenger", label: "Feriepenger" },
+      { href: "/countdown", label: "Countdown" },
+      { href: "/om", label: "Om" },
+    );
+  }
+  return links;
+}
 
 export function Header() {
   const pathname = usePathname();
+  const country = getCountryFromPath(pathname);
+  const links = navFor(country);
   const [open, setOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)]/70 bg-[var(--surface)]/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         <Link
-          href="/"
+          href={COUNTRIES[country].homePath}
           className="font-[family-name:var(--font-display)] text-2xl font-bold tracking-tight text-[var(--primary)] transition hover:text-[var(--accent)]"
           onClick={() => setOpen(false)}
         >
@@ -46,16 +62,38 @@ export function Header() {
           ))}
         </nav>
 
-        <button
-          type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-[var(--primary)] md:hidden"
-          aria-label={open ? "Lukk meny" : "Åpne meny"}
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="flex items-center gap-2">
+          <label className="sr-only" htmlFor="country-select">
+            Country
+          </label>
+          <select
+            id="country-select"
+            className="h-9 rounded-lg border border-[var(--border)] bg-white px-2 text-sm font-medium text-[var(--primary)]"
+            value={country}
+            onChange={(e) => {
+              const next = e.target.value as CountryCode;
+              window.location.href = COUNTRIES[next].homePath;
+            }}
+            aria-label="Country"
+          >
+            {COUNTRY_LIST.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.nativeName}
+              </option>
+            ))}
+          </select>
+
+          <button
+            type="button"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-[var(--primary)] md:hidden"
+            aria-label={open ? "Close" : "Menu"}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
       {open && (

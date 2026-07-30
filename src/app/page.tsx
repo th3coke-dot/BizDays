@@ -107,6 +107,35 @@ export default function HomePage() {
 
         <AdSlot className="mt-12" format="horizontal" />
 
+        <section className="mt-14">
+          <h2 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--primary)]">
+            Flere land
+          </h2>
+          <p className="mt-2 text-[var(--muted)]">
+            Samme verktøy for Sverige, Danmark og Finland.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/se"
+              className="rounded-lg border border-[var(--border)] bg-white/80 px-4 py-3 text-sm font-semibold text-[var(--primary)] hover:border-[var(--accent)]"
+            >
+              Sverige
+            </Link>
+            <Link
+              href="/dk"
+              className="rounded-lg border border-[var(--border)] bg-white/80 px-4 py-3 text-sm font-semibold text-[var(--primary)] hover:border-[var(--accent)]"
+            >
+              Danmark
+            </Link>
+            <Link
+              href="/fi"
+              className="rounded-lg border border-[var(--border)] bg-white/80 px-4 py-3 text-sm font-semibold text-[var(--primary)] hover:border-[var(--accent)]"
+            >
+              Suomi / Finland
+            </Link>
+          </div>
+        </section>
+
         <RelatedLinks
           keys={["countdown", "om"]}
           heading="Mer fra BizDays"

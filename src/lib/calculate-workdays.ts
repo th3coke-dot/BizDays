@@ -6,7 +6,11 @@ import {
   parseISO,
   startOfDay,
 } from "date-fns";
-import { getAllHolidays, getHolidaysForYear } from "@/data/holidays-no";
+import {
+  getAllHolidaysForCountry,
+  getHolidaysForCountryYear,
+} from "@/data/holidays";
+import type { CountryCode } from "@/lib/countries";
 import type { Holiday, WorkdayResult } from "@/types";
 
 function holidayMap(holidays: Holiday[]): Map<string, Holiday> {
@@ -17,12 +21,6 @@ export function isWeekend(date: Date): boolean {
   return isSaturday(date) || isSunday(date);
 }
 
-export function isHoliday(date: Date | string): Holiday | undefined {
-  const iso =
-    typeof date === "string" ? date.slice(0, 10) : toDateKey(date);
-  return holidayMap(getAllHolidays()).get(iso);
-}
-
 function toDateKey(date: Date): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -30,13 +28,22 @@ function toDateKey(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
+export function isHoliday(
+  date: Date | string,
+  country: CountryCode = "no",
+): Holiday | undefined {
+  const iso = typeof date === "string" ? date.slice(0, 10) : toDateKey(date);
+  return holidayMap(getAllHolidaysForCountry(country)).get(iso);
+}
+
 /**
  * Beregner arbeidsdager mellom to datoer (inkluderende).
- * Arbeidsdag = hverdag som ikke er helligdag.
+ * Arbeidsdag = hverdag som ikke er helligdag i valgt land.
  */
 export function calculateWorkdays(
   startDate: string | Date,
   endDate: string | Date,
+  country: CountryCode = "no",
 ): WorkdayResult {
   const start = startOfDay(
     typeof startDate === "string" ? parseISO(startDate) : startDate,
@@ -61,7 +68,7 @@ export function calculateWorkdays(
   }
 
   const relevantHolidays = Array.from(years).flatMap((y) =>
-    getHolidaysForYear(y),
+    getHolidaysForCountryYear(country, y),
   );
   const map = holidayMap(relevantHolidays);
 
@@ -79,7 +86,6 @@ export function calculateWorkdays(
     if (holiday) {
       holidays += 1;
       holidayList.push(holiday);
-      // Helligdag på helg telles også som helgedag for oversikt
       if (weekend) weekendDays += 1;
     } else if (weekend) {
       weekendDays += 1;

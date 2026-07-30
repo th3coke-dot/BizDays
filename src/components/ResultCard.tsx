@@ -1,29 +1,40 @@
 import { CalendarDays, Palmtree, PartyPopper } from "lucide-react";
 import type { WorkdayResult } from "@/types";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
+import type { CountryConfig } from "@/lib/countries";
 
 interface ResultCardProps {
   result: WorkdayResult;
+  labels?: CountryConfig["labels"];
 }
 
-export function ResultCard({ result }: ResultCardProps) {
+const defaultLabels = {
+  result: "Resultat",
+  workdayCount: "arbeidsdager",
+  holidayCount: "Helligdager",
+  weekendCount: "Helger",
+  explanation: "Helger og norske helligdager er trukket fra.",
+};
+
+export function ResultCard({ result, labels }: ResultCardProps) {
+  const l = { ...defaultLabels, ...labels };
   const stats = [
     {
-      label: "Arbeidsdager",
+      label: l.workdayCount.charAt(0).toUpperCase() + l.workdayCount.slice(1),
       value: result.workdays,
       icon: CalendarDays,
       accent: "text-[var(--accent)]",
       highlight: true,
     },
     {
-      label: "Helligdager",
+      label: l.holidayCount,
       value: result.holidays,
       icon: PartyPopper,
       accent: "text-rose-600",
       highlight: false,
     },
     {
-      label: "Helger",
+      label: l.weekendCount,
       value: result.weekendDays,
       icon: Palmtree,
       accent: "text-sky-700",
@@ -33,15 +44,16 @@ export function ResultCard({ result }: ResultCardProps) {
 
   return (
     <Card className="animate-fade-up">
-      <CardTitle>Resultat</CardTitle>
+      <CardTitle>{l.result}</CardTitle>
       <CardDescription>
-        Totalt {result.totalDays} dager i perioden (fra og med – til og med).
+        Totalt {result.totalDays} ({result.workdays} + {result.holidays} +{" "}
+        {result.weekendDays})
       </CardDescription>
 
       <p className="mt-5 font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--accent)] sm:text-6xl">
         {result.workdays}
         <span className="ml-2 text-lg font-semibold text-[var(--muted)] sm:text-xl">
-          arbeidsdager
+          {l.workdayCount}
         </span>
       </p>
 
@@ -67,7 +79,7 @@ export function ResultCard({ result }: ResultCardProps) {
       </div>
 
       <p className="mt-5 text-sm leading-relaxed text-[var(--muted)]">
-        Helger og norske helligdager er trukket fra.
+        {l.explanation}
       </p>
     </Card>
   );
