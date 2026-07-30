@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, CalendarRange, Flag, Timer } from "lucide-react";
-import type { CountryConfig } from "@/lib/countries";
+import type { LocalizedCountry } from "@/lib/countries";
 
-export function CountryHome({ country }: { country: CountryConfig }) {
+export function CountryHome({ country }: { country: LocalizedCountry }) {
   const tools = [
     {
       href: country.workdaysPath,
@@ -32,7 +32,7 @@ export function CountryHome({ country }: { country: CountryConfig }) {
           <p className="font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--primary)] sm:text-6xl">
             Biz<span className="text-[var(--accent)]">Days</span>
             <span className="ml-3 align-middle text-lg font-semibold text-[var(--muted)] sm:text-xl">
-              {country.nativeName}
+              {country.lang === "en" ? country.name : country.nativeName}
             </span>
           </p>
           <h1 className="mt-5 max-w-2xl font-[family-name:var(--font-display)] text-3xl font-semibold leading-tight text-[var(--primary)] sm:text-4xl">

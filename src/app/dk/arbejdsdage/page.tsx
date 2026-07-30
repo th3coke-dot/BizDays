@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { CountryWorkdaysPage } from "@/components/CountryPages";
-import { COUNTRIES } from "@/lib/countries";
+import { withLocale } from "@/lib/countries";
 import { createPageMetadata } from "@/lib/seo";
 
-const country = COUNTRIES.dk;
+const country = withLocale("dk");
 
 export const metadata: Metadata = createPageMetadata({
   title: "Beregn arbejdsdage",
-  description:
-    "Find antal danske arbejdsdage mellem to datoer. Weekender og helligdage trækkes fra.",
+  description: "Find danske arbejdsdage mellem to datoer.",
   path: "/dk/arbejdsdage",
 });
 

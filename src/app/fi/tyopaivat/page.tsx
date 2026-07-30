@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { CountryWorkdaysPage } from "@/components/CountryPages";
-import { COUNTRIES } from "@/lib/countries";
+import { withLocale } from "@/lib/countries";
 import { createPageMetadata } from "@/lib/seo";
 
-const country = COUNTRIES.fi;
+const country = withLocale("fi");
 
 export const metadata: Metadata = createPageMetadata({
   title: "Laske työpäivät",
-  description:
-    "Laske Suomen työpäivät kahden päivämäärän välillä. Viikonloput ja pyhäpäivät vähennetään.",
+  description: "Laske Suomen työpäivät kahden päivämäärän välillä.",
   path: "/fi/tyopaivat",
 });
 

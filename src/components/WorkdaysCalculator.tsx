@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { calculateWorkdays } from "@/lib/calculate-workdays";
 import { COUNTRIES, type CountryCode } from "@/lib/countries";
+import type { UiLabels } from "@/lib/i18n";
 import { toISODate } from "@/lib/utils";
 import type { WorkdayResult } from "@/types";
 
@@ -18,57 +19,29 @@ function defaultRange() {
   return { start: toISODate(start), end: toISODate(end) };
 }
 
-function compute(
-  start: string,
-  end: string,
-  country: CountryCode,
-): { result: WorkdayResult | null; error: string | null } {
-  if (!start || !end) {
-    return { result: null, error: "—" };
-  }
-  if (end < start) {
-    return { result: null, error: "—" };
-  }
-  return { result: calculateWorkdays(start, end, country), error: null };
-}
-
 type Props = {
   country?: CountryCode;
+  labels?: UiLabels;
 };
 
-export function WorkdaysCalculator({ country = "no" }: Props) {
-  const labels = COUNTRIES[country].labels;
+export function WorkdaysCalculator({ country = "no", labels }: Props) {
+  const l = labels ?? COUNTRIES[country].labels;
   const defaults = defaultRange();
   const [startDate, setStartDate] = useState(defaults.start);
   const [endDate, setEndDate] = useState(defaults.end);
-  const initial = compute(defaults.start, defaults.end, country);
-  const [result, setResult] = useState<WorkdayResult | null>(initial.result);
+  const [result, setResult] = useState<WorkdayResult | null>(() =>
+    calculateWorkdays(defaults.start, defaults.end, country),
+  );
   const [error, setError] = useState<string | null>(null);
 
   function apply(nextStart: string, nextEnd: string) {
     if (!nextStart || !nextEnd) {
-      setError(
-        country === "se"
-          ? "Välj både från- och tilldatum."
-          : country === "dk"
-            ? "Vælg både fra- og til-dato."
-            : country === "fi"
-              ? "Valitse alku- ja loppupäivä."
-              : "Velg både fra- og til-dato.",
-      );
+      setError(`${l.fromDate} / ${l.toDate}`);
       setResult(null);
       return;
     }
     if (nextEnd < nextStart) {
-      setError(
-        country === "se"
-          ? "Tilldatum måste vara efter från-datum."
-          : country === "dk"
-            ? "Til-dato skal være efter fra-dato."
-            : country === "fi"
-              ? "Loppupäivän on oltava alkupäivän jälkeen."
-              : "Til-dato må være etter fra-dato.",
-      );
+      setError(`${l.toDate} → ${l.fromDate}`);
       setResult(null);
       return;
     }
@@ -79,8 +52,8 @@ export function WorkdaysCalculator({ country = "no" }: Props) {
   return (
     <div className="grid gap-6">
       <Card>
-        <CardTitle>{labels.choosePeriod}</CardTitle>
-        <CardDescription>{labels.explanation}</CardDescription>
+        <CardTitle>{l.choosePeriod}</CardTitle>
+        <CardDescription>{l.explanation}</CardDescription>
         <div className="mt-5">
           <DateRangePicker
             startDate={startDate}
@@ -93,8 +66,8 @@ export function WorkdaysCalculator({ country = "no" }: Props) {
               setEndDate(value);
               apply(startDate, value);
             }}
-            fromLabel={labels.fromDate}
-            toLabel={labels.toDate}
+            fromLabel={l.fromDate}
+            toLabel={l.toDate}
           />
         </div>
         {error && (
@@ -109,22 +82,22 @@ export function WorkdaysCalculator({ country = "no" }: Props) {
             size="lg"
             className="w-full sm:w-auto"
           >
-            {labels.calculateWorkdays}
+            {l.calculateWorkdays}
           </Button>
         </div>
       </Card>
 
       {result && (
         <>
-          <ResultCard result={result} labels={labels} />
+          <ResultCard result={result} labels={l} />
           <HolidayList
             holidays={result.holidayList}
-            title={labels.redDaysTitle}
-            emptyText={labels.noHolidays}
+            title={l.redDaysTitle}
+            emptyText={l.noHolidays}
             showWeekendBadge
-            weekendBadgeLabel={labels.weekendBadge}
-            fixedLabel={labels.fixed}
-            movableLabel={labels.movable}
+            weekendBadgeLabel={l.weekendBadge}
+            fixedLabel={l.fixed}
+            movableLabel={l.movable}
           />
         </>
       )}

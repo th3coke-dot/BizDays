@@ -1,66 +1,81 @@
 import type { HolidayYear } from "@/types";
+import { EN_LABELS, englishLabelsForCountry, type UiLabels } from "@/lib/i18n";
 
-export type CountryCode = "no" | "se" | "dk" | "fi";
+export type CountryCode = "no" | "se" | "dk" | "fi" | "uk" | "de" | "pl" | "is";
+export type AppLanguage = "native" | "en";
 
 export type CountryConfig = {
   code: CountryCode;
   name: string;
   nativeName: string;
+  /** Default/native locale code for html lang */
   locale: string;
   htmlLang: string;
-  /** URL prefix; empty for Norway (default). */
+  /** Native-language URL prefix; empty for Norway. */
   prefix: string;
-  homePath: string;
-  workdaysPath: string;
-  holidaysPath: string;
-  countdownPath: string;
-  labels: {
+  /** Native path segments for tools */
+  nativeSegments: {
     workdays: string;
     holidays: string;
-    home: string;
-    calculateWorkdays: string;
-    choosePeriod: string;
-    fromDate: string;
-    toDate: string;
-    result: string;
-    workdayCount: string;
-    holidayCount: string;
-    weekendCount: string;
-    redDaysTitle: string;
-    noHolidays: string;
-    explanation: string;
-    weekendBadge: string;
-    fixed: string;
-    movable: string;
-    yearOverview: string;
-    toolsHeading: string;
-    heroTitle: string;
-    heroSupport: string;
-    ctaWorkdays: string;
-    ctaHolidays: string;
     countdown: string;
-    shareCountdown: string;
-    copied: string;
-    days: string;
-    hours: string;
-    minutes: string;
-    seconds: string;
   };
+  labels: UiLabels;
+  /** English labels (always available). */
+  labelsEn: UiLabels;
 };
+
+function pathsFor(country: CountryConfig, lang: AppLanguage) {
+  if (lang === "en") {
+    // UK's native language is English – prefer /uk over /en/uk
+    if (country.code === "uk") {
+      return {
+        homePath: "/uk",
+        workdaysPath: "/uk/workdays",
+        holidaysPath: "/uk/holidays",
+        countdownPath: "/uk/countdown",
+      };
+    }
+    const base = `/en/${country.code}`;
+    return {
+      homePath: base,
+      workdaysPath: `${base}/workdays`,
+      holidaysPath: `${base}/holidays`,
+      countdownPath: `${base}/countdown`,
+    };
+  }
+
+  const prefix = country.prefix;
+  if (!prefix) {
+    return {
+      homePath: "/",
+      workdaysPath: `/${country.nativeSegments.workdays}`,
+      holidaysPath: `/${country.nativeSegments.holidays}`,
+      countdownPath: `/${country.nativeSegments.countdown}`,
+    };
+  }
+  return {
+    homePath: prefix,
+    workdaysPath: `${prefix}/${country.nativeSegments.workdays}`,
+    holidaysPath: `${prefix}/${country.nativeSegments.holidays}`,
+    countdownPath: `${prefix}/${country.nativeSegments.countdown}`,
+  };
+}
 
 export const COUNTRIES: Record<CountryCode, CountryConfig> = {
   no: {
     code: "no",
-    name: "Norge",
+    name: "Norway",
     nativeName: "Norge",
     locale: "nb",
     htmlLang: "nb",
     prefix: "",
-    homePath: "/",
-    workdaysPath: "/arbeidsdager",
-    holidaysPath: "/helligdager",
-    countdownPath: "/countdown",
+    nativeSegments: {
+      workdays: "arbeidsdager",
+      holidays: "helligdager",
+      countdown: "countdown",
+    },
     labels: {
+      ...EN_LABELS,
       workdays: "Arbeidsdager",
       holidays: "Helligdager",
       home: "Forside",
@@ -82,7 +97,8 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       toolsHeading: "Velg et verktøy",
       heroTitle:
         "Norske arbeidsdager, helligdager og feriepenger – klart på sekunder",
-      heroSupport: "Enkle verktøy for planlegging, lønn og ferie. Bygget for Norge.",
+      heroSupport:
+        "Enkle verktøy for planlegging, lønn og ferie. Bygget for Norge.",
       ctaWorkdays: "Beregn arbeidsdager",
       ctaHolidays: "Se helligdager",
       countdown: "Countdown",
@@ -92,20 +108,25 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       hours: "Timer",
       minutes: "Minutt",
       seconds: "Sekund",
+      language: "Språk",
+      country: "Land",
     },
+    labelsEn: englishLabelsForCountry("Norway", "public holidays"),
   },
   se: {
     code: "se",
-    name: "Sverige",
+    name: "Sweden",
     nativeName: "Sverige",
     locale: "sv",
     htmlLang: "sv",
     prefix: "/se",
-    homePath: "/se",
-    workdaysPath: "/se/arbetsdagar",
-    holidaysPath: "/se/helgdagar",
-    countdownPath: "/se/countdown",
+    nativeSegments: {
+      workdays: "arbetsdagar",
+      holidays: "helgdagar",
+      countdown: "countdown",
+    },
     labels: {
+      ...EN_LABELS,
       workdays: "Arbetsdagar",
       holidays: "Helgdagar",
       home: "Startsida",
@@ -136,20 +157,25 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       hours: "Timmar",
       minutes: "Minuter",
       seconds: "Sekunder",
+      language: "Språk",
+      country: "Land",
     },
+    labelsEn: englishLabelsForCountry("Sweden", "public holidays"),
   },
   dk: {
     code: "dk",
-    name: "Danmark",
+    name: "Denmark",
     nativeName: "Danmark",
     locale: "da",
     htmlLang: "da",
     prefix: "/dk",
-    homePath: "/dk",
-    workdaysPath: "/dk/arbejdsdage",
-    holidaysPath: "/dk/helligdage",
-    countdownPath: "/dk/countdown",
+    nativeSegments: {
+      workdays: "arbejdsdage",
+      holidays: "helligdage",
+      countdown: "countdown",
+    },
     labels: {
+      ...EN_LABELS,
       workdays: "Arbejdsdage",
       holidays: "Helligdage",
       home: "Forside",
@@ -180,7 +206,10 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       hours: "Timer",
       minutes: "Minutter",
       seconds: "Sekunder",
+      language: "Sprog",
+      country: "Land",
     },
+    labelsEn: englishLabelsForCountry("Denmark", "public holidays"),
   },
   fi: {
     code: "fi",
@@ -189,11 +218,13 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
     locale: "fi",
     htmlLang: "fi",
     prefix: "/fi",
-    homePath: "/fi",
-    workdaysPath: "/fi/tyopaivat",
-    holidaysPath: "/fi/pyhapaivat",
-    countdownPath: "/fi/countdown",
+    nativeSegments: {
+      workdays: "tyopaivat",
+      holidays: "pyhapaivat",
+      countdown: "countdown",
+    },
     labels: {
+      ...EN_LABELS,
       workdays: "Työpäivät",
       holidays: "Pyhäpäivät",
       home: "Etusivu",
@@ -224,19 +255,266 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       hours: "Tuntia",
       minutes: "Minuuttia",
       seconds: "Sekuntia",
+      language: "Kieli",
+      country: "Maa",
     },
+    labelsEn: englishLabelsForCountry("Finland", "public holidays"),
+  },
+  uk: {
+    code: "uk",
+    name: "United Kingdom",
+    nativeName: "United Kingdom",
+    locale: "en",
+    htmlLang: "en",
+    prefix: "/uk",
+    nativeSegments: {
+      workdays: "workdays",
+      holidays: "holidays",
+      countdown: "countdown",
+    },
+    labels: englishLabelsForCountry("UK", "bank holidays"),
+    labelsEn: englishLabelsForCountry("UK", "bank holidays"),
+  },
+  de: {
+    code: "de",
+    name: "Germany",
+    nativeName: "Deutschland",
+    locale: "de",
+    htmlLang: "de",
+    prefix: "/de",
+    nativeSegments: {
+      workdays: "arbeitstage",
+      holidays: "feiertage",
+      countdown: "countdown",
+    },
+    labels: {
+      ...EN_LABELS,
+      workdays: "Arbeitstage",
+      holidays: "Feiertage",
+      home: "Startseite",
+      calculateWorkdays: "Arbeitstage berechnen",
+      choosePeriod: "Zeitraum wählen",
+      fromDate: "Von",
+      toDate: "Bis",
+      result: "Ergebnis",
+      workdayCount: "Arbeitstage",
+      holidayCount: "Feiertage",
+      weekendCount: "Wochenenden",
+      redDaysTitle: "Abgezogene Feiertage",
+      noHolidays: "Keine Feiertage im gewählten Zeitraum.",
+      explanation: "Wochenenden und deutsche Feiertage wurden abgezogen.",
+      weekendBadge: "Fällt auf ein Wochenende",
+      fixed: "Fest",
+      movable: "Beweglich",
+      yearOverview: "Jahresübersicht öffnen",
+      toolsHeading: "Werkzeug wählen",
+      heroTitle: "Deutsche Arbeitstage und Feiertage – in Sekunden",
+      heroSupport: "Einfache Tools für die Planung. Für Deutschland.",
+      ctaWorkdays: "Arbeitstage berechnen",
+      ctaHolidays: "Feiertage ansehen",
+      countdown: "Countdown",
+      shareCountdown: "Countdown teilen",
+      copied: "Kopiert!",
+      days: "Tage",
+      hours: "Stunden",
+      minutes: "Minuten",
+      seconds: "Sekunden",
+      language: "Sprache",
+      country: "Land",
+    },
+    labelsEn: englishLabelsForCountry("Germany", "public holidays"),
+  },
+  pl: {
+    code: "pl",
+    name: "Poland",
+    nativeName: "Polska",
+    locale: "pl",
+    htmlLang: "pl",
+    prefix: "/pl",
+    nativeSegments: {
+      workdays: "dni-robocze",
+      holidays: "swieta",
+      countdown: "countdown",
+    },
+    labels: {
+      ...EN_LABELS,
+      workdays: "Dni robocze",
+      holidays: "Święta",
+      home: "Strona główna",
+      calculateWorkdays: "Oblicz dni robocze",
+      choosePeriod: "Wybierz okres",
+      fromDate: "Od",
+      toDate: "Do",
+      result: "Wynik",
+      workdayCount: "dni roboczych",
+      holidayCount: "Święta",
+      weekendCount: "Weekendy",
+      redDaysTitle: "Odjęte święta",
+      noHolidays: "Brak świąt w wybranym okresie.",
+      explanation: "Weekendy i polskie święta zostały odjęte.",
+      weekendBadge: "Wypada w weekend",
+      fixed: "Stałe",
+      movable: "Ruchome",
+      yearOverview: "Otwórz przegląd roku",
+      toolsHeading: "Wybierz narzędzie",
+      heroTitle: "Polskie dni robocze i święta – w kilka sekund",
+      heroSupport: "Proste narzędzia do planowania. Dla Polski.",
+      ctaWorkdays: "Oblicz dni robocze",
+      ctaHolidays: "Zobacz święta",
+      countdown: "Countdown",
+      shareCountdown: "Udostępnij countdown",
+      copied: "Skopiowano!",
+      days: "Dni",
+      hours: "Godziny",
+      minutes: "Minuty",
+      seconds: "Sekundy",
+      language: "Język",
+      country: "Kraj",
+    },
+    labelsEn: englishLabelsForCountry("Poland", "public holidays"),
+  },
+  is: {
+    code: "is",
+    name: "Iceland",
+    nativeName: "Ísland",
+    locale: "is",
+    htmlLang: "is",
+    prefix: "/is",
+    nativeSegments: {
+      workdays: "virkdagar",
+      holidays: "helgidagar",
+      countdown: "countdown",
+    },
+    labels: {
+      ...EN_LABELS,
+      workdays: "Virkdagar",
+      holidays: "Helgidagar",
+      home: "Forsíða",
+      calculateWorkdays: "Reikna virkdaga",
+      choosePeriod: "Veldu tímabil",
+      fromDate: "Frá",
+      toDate: "Til",
+      result: "Niðurstaða",
+      workdayCount: "virkdagar",
+      holidayCount: "Helgidagar",
+      weekendCount: "Helgar",
+      redDaysTitle: "Frádregnir helgidagar",
+      noHolidays: "Engir helgidagar á völdu tímabili.",
+      explanation: "Helgar og íslenskir helgidagar hafa verið dregnir frá.",
+      weekendBadge: "Fellur á helgi",
+      fixed: "Fastur",
+      movable: "Hreyfanlegur",
+      yearOverview: "Opna ársyfirlit",
+      toolsHeading: "Veldu verkfæri",
+      heroTitle: "Íslenskir virkdagar og helgidagar – á sekúndum",
+      heroSupport: "Einföld verkfæri til skipulagningar. Fyrir Ísland.",
+      ctaWorkdays: "Reikna virkdaga",
+      ctaHolidays: "Sjá helgidaga",
+      countdown: "Countdown",
+      shareCountdown: "Deila countdown",
+      copied: "Afritað!",
+      days: "Dagar",
+      hours: "Klukkustundir",
+      minutes: "Mínútur",
+      seconds: "Sekúndur",
+      language: "Tungumál",
+      country: "Land",
+    },
+    labelsEn: englishLabelsForCountry("Iceland", "public holidays"),
   },
 };
 
 export const COUNTRY_LIST = Object.values(COUNTRIES);
+export const COUNTRY_CODES = Object.keys(COUNTRIES) as CountryCode[];
+
+export function getCountryConfig(code: CountryCode): CountryConfig {
+  return COUNTRIES[code];
+}
+
+export function resolveLabels(country: CountryCode, lang: AppLanguage): UiLabels {
+  const c = COUNTRIES[country];
+  return lang === "en" ? c.labelsEn : c.labels;
+}
+
+export function getCountryPaths(country: CountryCode, lang: AppLanguage = "native") {
+  return pathsFor(COUNTRIES[country], lang);
+}
+
+/** Attach resolved paths + labels for rendering. */
+export function withLocale(country: CountryCode, lang: AppLanguage = "native") {
+  const base = COUNTRIES[country];
+  const paths = pathsFor(base, lang);
+  const labels = resolveLabels(country, lang);
+  return {
+    ...base,
+    ...paths,
+    labels,
+    lang,
+    htmlLang: lang === "en" ? "en" : base.htmlLang,
+  };
+}
+
+export type LocalizedCountry = ReturnType<typeof withLocale>;
+
+export function getLanguageFromPath(pathname: string): AppLanguage {
+  if (pathname === "/en" || pathname.startsWith("/en/")) return "en";
+  return "native";
+}
 
 export function getCountryFromPath(pathname: string): CountryCode {
-  if (pathname === "/se" || pathname.startsWith("/se/")) return "se";
-  if (pathname === "/dk" || pathname.startsWith("/dk/")) return "dk";
-  if (pathname === "/fi" || pathname.startsWith("/fi/")) return "fi";
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts[0] === "en" && parts[1] && COUNTRY_CODES.includes(parts[1] as CountryCode)) {
+    return parts[1] as CountryCode;
+  }
+  const first = parts[0];
+  if (first && COUNTRY_CODES.includes(first as CountryCode) && first !== "no") {
+    return first as CountryCode;
+  }
+  // Norway native routes have no prefix
   return "no";
+}
+
+export function switchLanguagePath(
+  pathname: string,
+  country: CountryCode,
+  nextLang: AppLanguage,
+): string {
+  // Map current tool from path roughly
+  const lower = pathname.toLowerCase();
+  const paths = getCountryPaths(country, nextLang);
+  if (
+    lower.includes("workday") ||
+    lower.includes("arbeids") ||
+    lower.includes("arbets") ||
+    lower.includes("arbejds") ||
+    lower.includes("tyopaivat") ||
+    lower.includes("arbeitstage") ||
+    lower.includes("dni-robocze") ||
+    lower.includes("virkdagar")
+  ) {
+    return paths.workdaysPath;
+  }
+  if (
+    lower.includes("holiday") ||
+    lower.includes("helig") ||
+    lower.includes("helg") ||
+    lower.includes("feiert") ||
+    lower.includes("swieta") ||
+    lower.includes("pyhapaivat") ||
+    lower.includes("hellig")
+  ) {
+    // Keep year if present
+    const year = lower.match(/20(2[5-7])/)?.[0];
+    return year ? `${paths.holidaysPath}/${year}` : paths.holidaysPath;
+  }
+  if (lower.includes("countdown")) return paths.countdownPath;
+  return paths.homePath;
 }
 
 export function isHolidayYear(year: number): year is HolidayYear {
   return year === 2025 || year === 2026 || year === 2027;
+}
+
+export function isCountryCode(value: string): value is CountryCode {
+  return COUNTRY_CODES.includes(value as CountryCode);
 }
