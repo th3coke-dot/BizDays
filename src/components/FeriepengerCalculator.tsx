@@ -24,8 +24,11 @@ function parseAmount(value: string) {
 
 const SIM_YEAR = 2026;
 
+type SalaryPeriod = "yearly" | "monthly";
+
 export function FeriepengerCalculator() {
   const juneWorkdays = useMemo(() => juneWorkdaysForYear(SIM_YEAR), []);
+  const [salaryPeriod, setSalaryPeriod] = useState<SalaryPeriod>("yearly");
   const [brutto, setBrutto] = useState("550000");
   const [sats, setSats] = useState<FeriepengerSats>(10.2);
   const [monthlySalary, setMonthlySalary] = useState(() =>
@@ -42,9 +45,25 @@ export function FeriepengerCalculator() {
     [sats],
   );
 
+  const annualBasis = useMemo(() => {
+    const amount = parseAmount(brutto);
+    return salaryPeriod === "monthly" ? amount * 12 : amount;
+  }, [brutto, salaryPeriod]);
+
+  function handleSalaryPeriodChange(next: SalaryPeriod) {
+    if (next === salaryPeriod) return;
+    const amount = parseAmount(brutto);
+    if (amount > 0) {
+      const converted =
+        next === "monthly" ? Math.round(amount / 12) : Math.round(amount * 12);
+      setBrutto(String(converted));
+    }
+    setSalaryPeriod(next);
+  }
+
   const feriepenger = useMemo(
-    () => calculateFeriepenger(parseAmount(brutto), sats),
-    [brutto, sats],
+    () => calculateFeriepenger(annualBasis, sats),
+    [annualBasis, sats],
   );
 
   const payslip = useMemo(
@@ -82,8 +101,40 @@ export function FeriepengerCalculator() {
         </CardDescription>
 
         <div className="mt-5 grid gap-5">
+          <div>
+            <span className="text-sm font-medium text-[var(--primary)]">Lønn oppgitt som</span>
+            <div className="mt-2 inline-flex rounded-lg border border-[var(--border)] bg-white/80 p-1">
+              {(
+                [
+                  { id: "yearly" as const, label: "Årslønn" },
+                  { id: "monthly" as const, label: "Månedslønn" },
+                ] as const
+              ).map((option) => {
+                const active = salaryPeriod === option.id;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => handleSalaryPeriodChange(option.id)}
+                    className={cn(
+                      "rounded-md px-3 py-1.5 text-sm font-medium transition",
+                      active
+                        ? "bg-[var(--accent)] text-white"
+                        : "text-[var(--muted)] hover:text-[var(--primary)]",
+                    )}
+                    aria-pressed={active}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <label className="grid gap-2 text-sm font-medium text-[var(--primary)]">
-            Brutto feriepengegrunnlag (NOK)
+            {salaryPeriod === "yearly"
+              ? "Brutto årslønn / feriepengegrunnlag (NOK)"
+              : "Brutto månedslønn (NOK)"}
             <Input
               type="text"
               inputMode="decimal"
@@ -91,12 +142,20 @@ export function FeriepengerCalculator() {
               onChange={(e) => {
                 const next = e.target.value;
                 setBrutto(next);
-                const monthly = Math.round(parseAmount(next) / 12);
+                const amount = parseAmount(next);
+                const monthly = Math.round(
+                  salaryPeriod === "yearly" ? amount / 12 : amount,
+                );
                 if (monthly > 0) setMonthlySalary(String(monthly));
               }}
-              placeholder="f.eks. 550000"
+              placeholder={salaryPeriod === "yearly" ? "f.eks. 550000" : "f.eks. 45833"}
               className="min-h-12 text-base sm:min-h-11 sm:text-sm"
             />
+            <span className="text-xs font-normal text-[var(--muted)]">
+              {salaryPeriod === "yearly"
+                ? `Tilsvarer ${formatNOK(Math.round(parseAmount(brutto) / 12))} i måneden.`
+                : `Tilsvarer ${formatNOK(Math.round(parseAmount(brutto) * 12))} i året.`}
+            </span>
           </label>
 
           <fieldset>
@@ -173,6 +232,10 @@ export function FeriepengerCalculator() {
               onChange={(e) => setMonthlySalary(e.target.value)}
               className="min-h-12 text-base sm:min-h-11 sm:text-sm"
             />
+            <span className="text-xs font-normal text-[var(--muted)]">
+              Fylles automatisk ut fra lønnen over — endre gjerne hvis
+              nåværende lønn er annerledes enn feriepengegrunnlaget.
+            </span>
           </label>
 
           <label className="grid gap-2 text-sm font-medium text-[var(--primary)]">
