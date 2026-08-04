@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { COUNTRY_LIST } from "@/lib/countries";
 
-const footerLinks = [
-  { href: "/arbeidsdager", label: "Arbeidsdager" },
-  { href: "/helligdager", label: "Helligdager" },
-  { href: "/feriepenger", label: "Feriepenger" },
-  { href: "/arbeidsgiverkostnad", label: "Arbeidsgiverkostnad" },
+const globalLinks = [
+  { href: "/en", label: "All tools in English" },
   { href: "/countdown", label: "Countdown" },
+];
+
+const norwayExtras = [
+  { href: "/feriepenger", label: "Feriepenger" },
   { href: "/om", label: "Om BizDays" },
-  { href: "/en", label: "English" },
 ];
 
 export function Footer() {
@@ -29,10 +29,25 @@ export function Footer() {
         </div>
         <div>
           <p className="text-sm font-semibold uppercase tracking-wider text-slate-400">
-            Norway
+            Explore
           </p>
           <ul className="mt-4 grid gap-2">
-            {footerLinks.map((link) => (
+            {globalLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="text-sm text-slate-200 transition hover:text-white"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-5 text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Norway only
+          </p>
+          <ul className="mt-2 grid gap-2">
+            {norwayExtras.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
