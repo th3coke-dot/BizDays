@@ -31,7 +31,7 @@ function parseNumber(value: string) {
   return Number.isFinite(amount) ? amount : 0;
 }
 
-type AppliedAgreement = {
+type Override = {
   name: string;
   pensionPercent?: number;
   extraComponents: CostComponent[];
@@ -42,6 +42,7 @@ export function AdvancedEmploymentCostCalculator() {
   const [country, setCountry] = useState<CountryCode>("no");
   const model = EMPLOYMENT_COST_MODELS[country];
   const cbas = getCbasForCountry(country);
+  const pensionSchemes = useMemo(() => model.pensionSchemes ?? [], [model]);
 
   const [gross, setGross] = useState(String(model.defaultGross));
   const [regionId, setRegionId] = useState(
@@ -50,7 +51,9 @@ export function AdvancedEmploymentCostCalculator() {
   const [pensionInput, setPensionInput] = useState("");
   const [pensionTouched, setPensionTouched] = useState(false);
   const [selectedCbaId, setSelectedCbaId] = useState<string>("");
-  const [applied, setApplied] = useState<AppliedAgreement | null>(null);
+  const [selectedSchemeId, setSelectedSchemeId] = useState<string>("");
+  const [cbaOverride, setCbaOverride] = useState<Override | null>(null);
+  const [uploadOverride, setUploadOverride] = useState<Override | null>(null);
 
   function switchCountry(next: CountryCode) {
     const nextModel = EMPLOYMENT_COST_MODELS[next];
@@ -60,18 +63,20 @@ export function AdvancedEmploymentCostCalculator() {
     setPensionTouched(false);
     setPensionInput("");
     setSelectedCbaId("");
-    setApplied(null);
+    setSelectedSchemeId("");
+    setCbaOverride(null);
+    setUploadOverride(null);
   }
 
   function applyCba(id: string) {
     setSelectedCbaId(id);
     if (!id) {
-      setApplied(null);
+      setCbaOverride(null);
       return;
     }
     const cba = cbas.find((c) => c.id === id);
     if (!cba) return;
-    setApplied({
+    setCbaOverride({
       name: cba.name,
       pensionPercent: cba.overrides.pensionPercent,
       extraComponents: cba.overrides.extraComponents ?? [],
@@ -81,8 +86,7 @@ export function AdvancedEmploymentCostCalculator() {
   }
 
   function applyUpload(extraction: AgreementExtraction) {
-    setSelectedCbaId("");
-    setApplied({
+    setUploadOverride({
       name: "Uploaded local agreement",
       pensionPercent: extraction.pensionPercent,
       extraComponents: extraction.extraComponents,
@@ -91,26 +95,45 @@ export function AdvancedEmploymentCostCalculator() {
     setPensionTouched(false);
   }
 
+  const selectedScheme = useMemo(
+    () => pensionSchemes.find((s) => s.id === selectedSchemeId),
+    [pensionSchemes, selectedSchemeId],
+  );
+
   const defaultPensionPercent = useMemo(
     () => getDefaultPensionPercent(country, regionId || undefined),
     [country, regionId],
   );
+  const overridePensionPercent = cbaOverride?.pensionPercent ?? uploadOverride?.pensionPercent;
   const effectivePensionPercent = pensionTouched
     ? parseNumber(pensionInput)
-    : applied?.pensionPercent ?? defaultPensionPercent;
+    : overridePensionPercent ?? defaultPensionPercent;
   const pensionDisplayValue = pensionTouched
     ? pensionInput
-    : String(applied?.pensionPercent ?? defaultPensionPercent);
+    : String(overridePensionPercent ?? defaultPensionPercent);
+
+  const combinedExtraComponents = useMemo(
+    () => [
+      ...(cbaOverride?.extraComponents ?? []),
+      ...(selectedScheme?.extraComponents ?? []),
+      ...(uploadOverride?.extraComponents ?? []),
+    ],
+    [cbaOverride, selectedScheme, uploadOverride],
+  );
+
+  const appliedNames = [cbaOverride?.name, selectedScheme?.label, uploadOverride?.name].filter(
+    (v): v is string => Boolean(v),
+  );
 
   const result = useMemo(() => {
     return calculateEmploymentCost(country, parseNumber(gross), {
       regionId: regionId || undefined,
       lang: "en",
       pensionPercent: effectivePensionPercent,
-      extraComponents: applied?.extraComponents,
-      appliedAgreementName: applied?.name,
+      extraComponents: combinedExtraComponents,
+      appliedAgreementName: appliedNames.join(" + ") || undefined,
     });
-  }, [country, gross, regionId, effectivePensionPercent, applied]);
+  }, [country, gross, regionId, effectivePensionPercent, combinedExtraComponents, appliedNames]);
 
   const hasRegions = Boolean(model.regions && model.regions.length > 0);
   const periodRates = [
@@ -225,6 +248,36 @@ export function AdvancedEmploymentCostCalculator() {
         )}
       </Card>
 
+      {pensionSchemes.length > 0 && (
+        <Card>
+          <CardTitle>Pension / early-retirement scheme</CardTitle>
+          <CardDescription>
+            Some countries have opt-in schemes that add employer costs on
+            top of standard occupational pension — for example Norway&apos;s
+            AFP.
+          </CardDescription>
+          <label className="mt-4 grid gap-2 text-sm font-medium text-[var(--primary)]">
+            Scheme for {COUNTRY_LIST.find((c) => c.code === country)?.name}
+            <Select
+              value={selectedSchemeId}
+              onChange={(e) => setSelectedSchemeId(e.target.value)}
+            >
+              {pensionSchemes.map((scheme) => (
+                <option key={scheme.id} value={scheme.id === "none" ? "" : scheme.id}>
+                  {scheme.label}
+                </option>
+              ))}
+            </Select>
+          </label>
+          {selectedScheme?.note && (
+            <div className="mt-3 flex items-start gap-2 rounded-lg border border-teal-200 bg-teal-50 p-3 text-xs text-teal-900">
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{selectedScheme.note}</span>
+            </div>
+          )}
+        </Card>
+      )}
+
       <Card>
         <CardTitle>Or upload a local agreement</CardTitle>
         <CardDescription>
@@ -241,11 +294,14 @@ export function AdvancedEmploymentCostCalculator() {
         <CardTitle>Total employment cost</CardTitle>
         <CardDescription>
           {formatMoney(result.gross, result.currency)} + employer charges
-          {applied && (
-            <span className="ml-2 inline-flex items-center rounded-full bg-teal-100 px-2 py-0.5 text-xs font-semibold text-teal-800">
-              {applied.name}
+          {appliedNames.map((name) => (
+            <span
+              key={name}
+              className="ml-2 inline-flex items-center rounded-full bg-teal-100 px-2 py-0.5 text-xs font-semibold text-teal-800"
+            >
+              {name}
             </span>
-          )}
+          ))}
         </CardDescription>
         <p className="mt-4 font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--accent)] sm:text-6xl">
           {formatMoney(result.total, result.currency)}
