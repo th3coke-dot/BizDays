@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRight,
-  CalendarRange,
-  Flag,
-  Timer,
-  Wallet,
-} from "lucide-react";
+import { ArrowRight, Briefcase, User } from "lucide-react";
 import { AdSlot } from "@/components/AdSlot";
 import { COUNTRY_LIST } from "@/lib/countries";
 import { createPageMetadata } from "@/lib/seo";
@@ -20,26 +14,22 @@ export const metadata: Metadata = createPageMetadata({
   path: "/",
 });
 
-const features = [
+const paths = [
   {
-    title: "Workdays",
-    description: "Count business days between two dates, holidays excluded.",
-    icon: CalendarRange,
+    href: "/for-employees",
+    icon: User,
+    eyebrow: "For employees",
+    title: "Just the essentials",
+    description:
+      "Workdays, public holidays, countdowns and feriepenger — simple tools, no clutter.",
   },
   {
-    title: "Public holidays",
-    description: "Full 2026–2027 holiday calendars, country by country.",
-    icon: Flag,
-  },
-  {
-    title: "Countdown",
-    description: "Share a live countdown to any date or deadline.",
-    icon: Timer,
-  },
-  {
-    title: "Employment cost",
-    description: "Estimate the full employer cost on top of gross salary.",
-    icon: Wallet,
+    href: "/for-employers",
+    icon: Briefcase,
+    eyebrow: "For employers",
+    title: "Total cost of employment",
+    description:
+      "Country-by-country employer costs, collective agreements, and your own uploaded local agreements.",
   },
 ];
 
@@ -57,136 +47,74 @@ export default function HomePage() {
           aria-hidden
         />
 
-        <div className="relative mx-auto flex min-h-[min(78vh,720px)] max-w-6xl flex-col justify-center px-4 py-16 sm:px-6 sm:py-20">
-          <p className="animate-fade-up font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--primary)] sm:text-6xl md:text-7xl">
+        <div className="relative mx-auto flex max-w-5xl flex-col items-center px-4 py-16 text-center sm:px-6 sm:py-20">
+          <p className="animate-fade-up font-[family-name:var(--font-display)] text-5xl font-bold tracking-tight text-[var(--primary)] sm:text-6xl">
             Biz<span className="text-[var(--accent)]">Days</span>
           </p>
-          <h1 className="animate-fade-up-delay mt-5 max-w-2xl font-[family-name:var(--font-display)] text-3xl font-semibold leading-tight text-[var(--primary)] sm:text-4xl">
+          <h1 className="animate-fade-up-delay mt-5 max-w-2xl font-[family-name:var(--font-display)] text-2xl font-semibold leading-tight text-[var(--primary)] sm:text-3xl">
             Workdays, holidays and employment costs — for every country
           </h1>
-          <p className="animate-fade-up-delay-2 mt-5 max-w-xl text-base leading-relaxed text-[var(--muted)] sm:text-lg">
-            One simple toolkit for planning, payroll and HR. Pick your country
-            below to get local holidays, workday calculators and employer
-            cost estimates.
+          <p className="animate-fade-up-delay-2 mt-4 max-w-lg text-base leading-relaxed text-[var(--muted)]">
+            Start by telling us who you are.
           </p>
-          <div className="animate-fade-up-delay-2 mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <Link
-              href="#countries"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[var(--accent)] px-6 text-base font-semibold text-white transition hover:bg-[var(--accent-hover)]"
-            >
-              Choose your country
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              href="/en"
-              className="inline-flex h-12 items-center justify-center rounded-lg border border-[var(--border)] bg-white/70 px-6 text-base font-semibold text-[var(--primary)] transition hover:border-[var(--accent)]"
-            >
-              Browse in English
-            </Link>
+
+          <div className="animate-fade-up-delay-2 mt-10 grid w-full gap-4 sm:grid-cols-2">
+            {paths.map((path) => (
+              <Link
+                key={path.href}
+                href={path.href}
+                className="group flex flex-col items-start rounded-2xl border border-[var(--border)] bg-white/80 p-7 text-left transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:shadow-[0_20px_50px_-28px_rgba(15,23,42,0.5)]"
+              >
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--accent)]/10 text-[var(--accent)]">
+                  <path.icon className="h-6 w-6" aria-hidden />
+                </span>
+                <p className="mt-4 text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
+                  {path.eyebrow}
+                </p>
+                <h2 className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--primary)]">
+                  {path.title}
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+                  {path.description}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)]">
+                  Continue
+                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-20">
-        <h2 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--primary)]">
-          What you can do
-        </h2>
-        <p className="mt-2 max-w-2xl text-[var(--muted)]">
-          The same set of tools, localized for every country BizDays supports.
-        </p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((feature) => (
-            <div
-              key={feature.title}
-              className="rounded-2xl border border-[var(--border)] bg-white/75 p-6"
-            >
-              <feature.icon className="h-6 w-6 text-[var(--accent)]" aria-hidden />
-              <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--primary)]">
-                {feature.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-                {feature.description}
-              </p>
-            </div>
-          ))}
-        </div>
+        <AdSlot format="horizontal" />
 
-        <section className="mt-14 grid gap-4 sm:grid-cols-2">
-          <Link
-            href="/for-employees"
-            className="group rounded-2xl border border-[var(--border)] bg-white/75 p-6 transition hover:border-[var(--accent)]"
-          >
-            <p className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
-              For employees
-            </p>
-            <h3 className="mt-2 font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--primary)]">
-              Simple, no-fuss tools
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-              Workdays, holidays and countdowns — nothing complicated.
-            </p>
-            <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)]">
-              Explore
-              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-            </span>
-          </Link>
-          <Link
-            href="/for-employers"
-            className="group rounded-2xl border border-[var(--border)] bg-white/75 p-6 transition hover:border-[var(--accent)]"
-          >
-            <p className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
-              For employers
-            </p>
-            <h3 className="mt-2 font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--primary)]">
-              CBA-aware employment cost
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-              Layer collective agreements or your own uploaded local
-              agreement onto the total cost of employment.
-            </p>
-            <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)]">
-              Explore
-              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-            </span>
-          </Link>
-        </section>
-
-        <AdSlot className="mt-12" format="horizontal" />
-
-        <section id="countries" className="mt-14">
-          <h2 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--primary)]">
-            Choose your country
+        <div className="mt-12 rounded-2xl border border-[var(--border)] bg-white/60 p-6 sm:p-8">
+          <h2 className="font-[family-name:var(--font-display)] text-lg font-semibold text-[var(--primary)]">
+            Just want a specific country?
           </h2>
-          <p className="mt-2 text-[var(--muted)]">
-            Every country is available in its own language, plus English.
+          <p className="mt-2 text-sm text-[var(--muted)]">
+            Every tool is also available directly, in the local language plus English.
           </p>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-5 flex flex-wrap gap-2">
             {COUNTRY_LIST.map((c) => (
               <Link
                 key={c.code}
                 href={c.code === "no" ? "/" : `/${c.code}`}
-                className="group rounded-xl border border-[var(--border)] bg-white/80 px-5 py-4 font-semibold text-[var(--primary)] transition hover:border-[var(--accent)] hover:shadow-[0_16px_40px_-28px_rgba(15,23,42,0.45)]"
+                className="rounded-lg border border-[var(--border)] bg-white/80 px-3.5 py-2 text-sm font-medium text-[var(--primary)] transition hover:border-[var(--accent)]"
               >
-                <span className="flex items-center justify-between">
-                  {c.name}
-                  <ArrowRight className="h-4 w-4 text-[var(--accent)] opacity-0 transition group-hover:opacity-100" />
-                </span>
-                {c.name !== c.nativeName && (
-                  <span className="mt-0.5 block text-xs font-normal text-[var(--muted)]">
-                    {c.nativeName}
-                  </span>
-                )}
+                {c.name}
               </Link>
             ))}
-          </div>
-          <p className="mt-6 text-sm text-[var(--muted)]">
-            Prefer to browse everything in English first?{" "}
-            <Link href="/en" className="font-medium text-[var(--accent)] hover:underline">
-              Open the English hub
+            <Link
+              href="/en"
+              className="rounded-lg border border-[var(--border)] bg-white/80 px-3.5 py-2 text-sm font-medium text-[var(--accent)] transition hover:border-[var(--accent)]"
+            >
+              English hub
             </Link>
-            .
-          </p>
-        </section>
+          </div>
+        </div>
       </section>
     </>
   );
