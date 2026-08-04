@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.bizdayz.com";
 export const SITE_NAME = "BizDays";
-export const SITE_LOCALE = "nb_NO";
+export const SITE_LOCALE = "en_US";
 
 const DEFAULT_DESCRIPTION =
-  "Beregn norske arbeidsdager, se helligdager og regn ut feriepenger. Enkle verktøy for bedrifter og ansatte.";
+  "Calculate workdays, track public holidays and estimate employment costs — for Norway, Sweden, Denmark, Finland, the UK, Germany, Poland and Iceland. Simple tools for employees and employers.";
 
 type PageSeoInput = {
   title: string;
@@ -71,7 +71,7 @@ export function websiteJsonLd() {
     name: SITE_NAME,
     url: SITE_URL,
     description: DEFAULT_DESCRIPTION,
-    inLanguage: "nb-NO",
+    inLanguage: "en",
   };
 }
 
@@ -84,11 +84,11 @@ export function webApplicationJsonLd() {
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description: DEFAULT_DESCRIPTION,
-    inLanguage: "nb-NO",
+    inLanguage: "en",
     offers: {
       "@type": "Offer",
       price: "0",
-      priceCurrency: "NOK",
+      priceCurrency: "USD",
     },
   };
 }

@@ -16,9 +16,12 @@ import {
 } from "@/lib/countries";
 import { cn } from "@/lib/utils";
 
-function navFor(country: CountryCode, lang: AppLanguage) {
+function navFor(country: CountryCode, lang: AppLanguage, isGlobalHome: boolean) {
   const paths = getCountryPaths(country, lang);
   const labels = resolveLabels(country, lang);
+  if (isGlobalHome) {
+    return { links: [], paths, labels };
+  }
   const links = [
     { href: paths.workdaysPath, label: labels.workdays },
     { href: paths.holidaysPath, label: labels.holidays },
@@ -56,9 +59,10 @@ function nativeLangCode(country: CountryCode) {
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const isGlobalHome = pathname === "/";
   const country = getCountryFromPath(pathname);
   const lang = getLanguageFromPath(pathname);
-  const { links, paths, labels } = navFor(country, lang);
+  const { links, paths, labels } = navFor(country, lang, isGlobalHome);
   const [open, setOpen] = useState(false);
 
   return (
@@ -119,19 +123,21 @@ export function Header() {
             {country !== "uk" && <option value="en">EN</option>}
           </select>
 
-          <button
-            type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-[var(--primary)] lg:hidden"
-            aria-label={open ? "Close" : "Menu"}
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          {links.length > 0 && (
+            <button
+              type="button"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-[var(--primary)] lg:hidden"
+              aria-label={open ? "Close" : "Menu"}
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          )}
         </div>
       </div>
 
-      {open && (
+      {open && links.length > 0 && (
         <nav className="border-t border-[var(--border)] bg-[var(--surface)] px-4 py-3 lg:hidden">
           <div className="flex flex-col gap-1">
             {links.map((link) => (

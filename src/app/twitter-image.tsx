@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "BizDays – arbeidsdager, helligdager og feriepenger";
+export const alt = "BizDays – workdays, holidays and employment costs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -41,7 +41,7 @@ export default function TwitterImage() {
             display: "flex",
           }}
         >
-          Norske arbeidsdager, helligdager og feriepenger – klart på sekunder
+          Workdays, holidays and employment costs — for every country
         </div>
         <div
           style={{

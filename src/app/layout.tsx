@@ -37,13 +37,13 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   ...createPageMetadata({
     title: SITE_NAME,
-    absoluteTitle: `${SITE_NAME} – Arbeidsdager, helligdager og feriepenger`,
+    absoluteTitle: `${SITE_NAME} – Workdays, holidays & employment costs`,
     description: defaultDescription,
     path: "/",
   }),
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} – Arbeidsdager, helligdager og feriepenger`,
+    default: `${SITE_NAME} – Workdays, holidays & employment costs`,
     template: `%s | ${SITE_NAME}`,
   },
   verification: {
@@ -59,10 +59,10 @@ export default function RootLayout({
   const jsonLd = [websiteJsonLd(), webApplicationJsonLd()];
 
   return (
-    <html lang="nb" className={`${display.variable} ${body.variable} h-full`}>
+    <html lang="en" className={`${display.variable} ${body.variable} h-full`}>
       <body className="flex min-h-full flex-col antialiased">
         <a href="#main" className="skip-link">
-          Hopp til innhold
+          Skip to content
         </a>
         <script
           type="application/ld+json"

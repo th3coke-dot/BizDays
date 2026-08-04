@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -42,19 +42,18 @@ export function EmploymentCostCalculator({
   const [regionId, setRegionId] = useState(
     model.defaultRegionId ?? model.regions?.[0]?.id ?? "",
   );
-  const [pension, setPension] = useState(() =>
-    String(getDefaultPensionPercent(country, model.defaultRegionId)),
-  );
+  const [pensionInput, setPensionInput] = useState("");
   const [pensionTouched, setPensionTouched] = useState(false);
 
   const locale =
     lang === "en" ? "en-GB" : model.country === "no" ? "nb-NO" : "en-GB";
   const calcLang = lang === "en" ? "en" : "native";
 
-  useEffect(() => {
-    if (pensionTouched) return;
-    setPension(String(getDefaultPensionPercent(country, regionId || undefined)));
-  }, [country, regionId, pensionTouched]);
+  const defaultPensionPercent = useMemo(
+    () => getDefaultPensionPercent(country, regionId || undefined),
+    [country, regionId],
+  );
+  const pension = pensionTouched ? pensionInput : String(defaultPensionPercent);
 
   const result = useMemo(() => {
     return calculateEmploymentCost(country, parseNumber(gross), {
@@ -115,7 +114,7 @@ export function EmploymentCostCalculator({
               value={pension}
               onChange={(e) => {
                 setPensionTouched(true);
-                setPension(e.target.value);
+                setPensionInput(e.target.value);
               }}
               className="min-h-12 text-base sm:min-h-11 sm:text-sm"
             />

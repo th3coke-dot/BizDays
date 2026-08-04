@@ -104,7 +104,7 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       heroTitle:
         "Norske arbeidsdager, helligdager og feriepenger – klart på sekunder",
       heroSupport:
-        "Enkle verktøy for planlegging, lønn og ferie. Bygget for Norge.",
+        "Enkle verktøy for planlegging, lønn og ferie.",
       ctaWorkdays: "Beregn arbeidsdager",
       ctaHolidays: "Se helligdager",
       countdown: "Countdown",
