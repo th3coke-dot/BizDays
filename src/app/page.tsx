@@ -111,6 +111,46 @@ export default function HomePage() {
           ))}
         </div>
 
+        <section className="mt-14 grid gap-4 sm:grid-cols-2">
+          <Link
+            href="/for-employees"
+            className="group rounded-2xl border border-[var(--border)] bg-white/75 p-6 transition hover:border-[var(--accent)]"
+          >
+            <p className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
+              For employees
+            </p>
+            <h3 className="mt-2 font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--primary)]">
+              Simple, no-fuss tools
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+              Workdays, holidays and countdowns — nothing complicated.
+            </p>
+            <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)]">
+              Explore
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+            </span>
+          </Link>
+          <Link
+            href="/for-employers"
+            className="group rounded-2xl border border-[var(--border)] bg-white/75 p-6 transition hover:border-[var(--accent)]"
+          >
+            <p className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
+              For employers
+            </p>
+            <h3 className="mt-2 font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--primary)]">
+              CBA-aware employment cost
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
+              Layer collective agreements or your own uploaded local
+              agreement onto the total cost of employment.
+            </p>
+            <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)]">
+              Explore
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+            </span>
+          </Link>
+        </section>
+
         <AdSlot className="mt-12" format="horizontal" />
 
         <section id="countries" className="mt-14">

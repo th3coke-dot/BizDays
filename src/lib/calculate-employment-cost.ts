@@ -14,6 +14,8 @@ export type CostComponent = {
   fixedAnnual?: number;
   /** Only apply percentage above this annual threshold */
   thresholdAnnual?: number;
+  /** Only apply percentage up to this annual ceiling (e.g. a contribution cap) */
+  capAnnual?: number;
   /** Employer pension / occupational pension contribution */
   isPension?: boolean;
   note?: string;
@@ -24,6 +26,21 @@ export type RegionOption = {
   label: string;
   labelEn: string;
   components: CostComponent[];
+};
+
+/**
+ * An optional pension / early-retirement scheme a business can opt into
+ * (or be bound to via a collective agreement), layered on top of the
+ * base employer cost model as additional line items. Unlike `regions`,
+ * schemes are additive and don't replace the base components.
+ */
+export type PensionSchemeOption = {
+  id: string;
+  label: string;
+  labelNative?: string;
+  note?: string;
+  noteNative?: string;
+  extraComponents: CostComponent[];
 };
 
 export type EmploymentCostModel = {
@@ -45,6 +62,8 @@ export type EmploymentCostModel = {
   baseComponents: CostComponent[];
   regions?: RegionOption[];
   defaultRegionId?: string;
+  /** Optional pension/early-retirement schemes a business can opt into. */
+  pensionSchemes?: PensionSchemeOption[];
 };
 
 const NO_ZONES: RegionOption[] = [
@@ -167,6 +186,34 @@ export const EMPLOYMENT_COST_MODELS: Record<CountryCode, EmploymentCostModel> =
           ratePercent: 2,
           isPension: true,
           note: "Minimum often 2%; many schemes are higher — edit the pension field.",
+        },
+      ],
+      pensionSchemes: [
+        {
+          id: "none",
+          label: "None (standard OTP only)",
+          labelNative: "Ingen (kun standard OTP)",
+          extraComponents: [],
+        },
+        {
+          id: "afp-private",
+          label: "AFP – private sector (Fellesordningen)",
+          labelNative: "AFP – privat sektor (Fellesordningen)",
+          note:
+            "Verified: 2.7% of salary between 1G and 7.1G (G = kr 136,549 from 1 May 2026). Only applies to businesses bound by a collective agreement that includes AFP — source: afp.no, \"Premie for 2026\" (accessed 2026).",
+          noteNative:
+            "Verifisert: 2,7 % av lønn mellom 1G og 7,1G (G = kr 136 549 fra 1. mai 2026). Gjelder kun bedrifter bundet av tariffavtale som inkluderer AFP — kilde: afp.no, «Premie for 2026» (hentet 2026).",
+          extraComponents: [
+            {
+              id: "afp-private-premium",
+              name: "AFP premium (private sector, Fellesordningen)",
+              nameNative: "AFP-premie (privat sektor, Fellesordningen)",
+              ratePercent: 2.7,
+              thresholdAnnual: 136549,
+              capAnnual: 969498,
+              note: "2.7% of salary between 1G (kr 136,549) and 7.1G (kr 969,498) for 2026. Requires the business to be bound by a qualifying collective agreement.",
+            },
+          ],
         },
       ],
     },
@@ -619,6 +666,8 @@ export type EmploymentCostResult = {
   weekRate: number;
   monthRate: number;
   yearRate: number;
+  /** Name of the CBA / local agreement applied, if any. */
+  appliedAgreementName?: string;
 };
 
 export type EmploymentCostOptions = {
@@ -626,6 +675,15 @@ export type EmploymentCostOptions = {
   lang?: "native" | "en";
   /** Override employer pension contribution (% of gross) */
   pensionPercent?: number;
+  /**
+   * Additional cost line items layered on top of the base model — used to
+   * apply a selected collective bargaining agreement (CBA) or data
+   * extracted from an uploaded local agreement. Each entry is added as its
+   * own line; use `ratePercent` (of gross) or `fixedAnnual`.
+   */
+  extraComponents?: CostComponent[];
+  /** Label shown alongside the result so users know what was applied. */
+  appliedAgreementName?: string;
 };
 
 function resolveComponents(
@@ -693,11 +751,14 @@ export function calculateEmploymentCost(
       ? Math.max(0, options.pensionPercent)
       : defaultPension;
 
-  const components = applyPensionOverride(
-    model,
-    resolveComponents(model, options.regionId),
-    pensionPercent,
-  );
+  const components = [
+    ...applyPensionOverride(
+      model,
+      resolveComponents(model, options.regionId),
+      pensionPercent,
+    ),
+    ...(options.extraComponents ?? []),
+  ];
   const lines: EmploymentCostLine[] = [];
   let employerCost = 0;
 
@@ -708,15 +769,19 @@ export function calculateEmploymentCost(
       amount = c.fixedAnnual;
       detail = `${model.currencySymbol} ${c.fixedAnnual}/year`;
     } else if (typeof c.ratePercent === "number") {
-      const base =
-        typeof c.thresholdAnnual === "number"
-          ? Math.max(0, gross - c.thresholdAnnual)
-          : gross;
+      const lower = typeof c.thresholdAnnual === "number" ? c.thresholdAnnual : 0;
+      const upper = typeof c.capAnnual === "number" ? c.capAnnual : Infinity;
+      const base = Math.max(0, Math.min(gross, upper) - lower);
       amount = (base * c.ratePercent) / 100;
-      detail =
-        typeof c.thresholdAnnual === "number"
-          ? `${c.ratePercent}% above ${model.currencySymbol}${c.thresholdAnnual.toLocaleString("en-GB")}`
-          : `${c.ratePercent}%`;
+      if (typeof c.thresholdAnnual === "number" && typeof c.capAnnual === "number") {
+        detail = `${c.ratePercent}% between ${model.currencySymbol}${lower.toLocaleString("en-GB")} and ${model.currencySymbol}${c.capAnnual.toLocaleString("en-GB")}`;
+      } else if (typeof c.thresholdAnnual === "number") {
+        detail = `${c.ratePercent}% above ${model.currencySymbol}${lower.toLocaleString("en-GB")}`;
+      } else if (typeof c.capAnnual === "number") {
+        detail = `${c.ratePercent}% up to ${model.currencySymbol}${c.capAnnual.toLocaleString("en-GB")}`;
+      } else {
+        detail = `${c.ratePercent}%`;
+      }
     }
     amount = Math.round(amount);
     employerCost += amount;
@@ -741,5 +806,6 @@ export function calculateEmploymentCost(
     weekRate: Math.round(total / 52),
     monthRate: Math.round(total / 12),
     yearRate: total,
+    appliedAgreementName: options.appliedAgreementName,
   };
 }

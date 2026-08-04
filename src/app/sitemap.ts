@@ -15,6 +15,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/countdown",
     "/om",
     "/en",
+    "/for-employees",
+    "/for-employers",
+    "/security",
   ];
 
   const routes = [...noRoutes];
