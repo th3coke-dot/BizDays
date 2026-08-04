@@ -619,6 +619,8 @@ export type EmploymentCostResult = {
   weekRate: number;
   monthRate: number;
   yearRate: number;
+  /** Name of the CBA / local agreement applied, if any. */
+  appliedAgreementName?: string;
 };
 
 export type EmploymentCostOptions = {
@@ -626,6 +628,15 @@ export type EmploymentCostOptions = {
   lang?: "native" | "en";
   /** Override employer pension contribution (% of gross) */
   pensionPercent?: number;
+  /**
+   * Additional cost line items layered on top of the base model — used to
+   * apply a selected collective bargaining agreement (CBA) or data
+   * extracted from an uploaded local agreement. Each entry is added as its
+   * own line; use `ratePercent` (of gross) or `fixedAnnual`.
+   */
+  extraComponents?: CostComponent[];
+  /** Label shown alongside the result so users know what was applied. */
+  appliedAgreementName?: string;
 };
 
 function resolveComponents(
@@ -693,11 +704,14 @@ export function calculateEmploymentCost(
       ? Math.max(0, options.pensionPercent)
       : defaultPension;
 
-  const components = applyPensionOverride(
-    model,
-    resolveComponents(model, options.regionId),
-    pensionPercent,
-  );
+  const components = [
+    ...applyPensionOverride(
+      model,
+      resolveComponents(model, options.regionId),
+      pensionPercent,
+    ),
+    ...(options.extraComponents ?? []),
+  ];
   const lines: EmploymentCostLine[] = [];
   let employerCost = 0;
 
@@ -741,5 +755,6 @@ export function calculateEmploymentCost(
     weekRate: Math.round(total / 52),
     monthRate: Math.round(total / 12),
     yearRate: total,
+    appliedAgreementName: options.appliedAgreementName,
   };
 }

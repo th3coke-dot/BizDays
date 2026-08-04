@@ -20,7 +20,14 @@ function navFor(country: CountryCode, lang: AppLanguage, isGlobalHome: boolean) 
   const paths = getCountryPaths(country, lang);
   const labels = resolveLabels(country, lang);
   if (isGlobalHome) {
-    return { links: [], paths, labels };
+    return {
+      links: [
+        { href: "/for-employees", label: "For employees" },
+        { href: "/for-employers", label: "For employers" },
+      ],
+      paths,
+      labels,
+    };
   }
   const links = [
     { href: paths.workdaysPath, label: labels.workdays },

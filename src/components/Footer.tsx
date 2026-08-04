@@ -2,8 +2,11 @@ import Link from "next/link";
 import { COUNTRY_LIST } from "@/lib/countries";
 
 const globalLinks = [
+  { href: "/for-employees", label: "For employees" },
+  { href: "/for-employers", label: "For employers" },
   { href: "/en", label: "All tools in English" },
   { href: "/countdown", label: "Countdown" },
+  { href: "/security", label: "Security & data handling" },
 ];
 
 const norwayExtras = [
