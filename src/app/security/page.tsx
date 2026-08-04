@@ -20,7 +20,7 @@ const sections = [
     title: "AI-assisted extraction is opt-in and disclosed",
     body: [
       "You must tick a consent checkbox before any file leaves your browser.",
-      "If an AI provider key is configured for the deployment, the extracted document text (not the raw file) is sent to that provider for a single extraction call, scoped to a strict prompt that only returns figures literally present in the text.",
+      "If an AI provider key (OpenAI or Anthropic) is configured for the deployment, the extracted document text (not the raw file) is sent to that provider for a single extraction call, scoped to a strict prompt that only returns figures literally present in the text.",
       "If no AI provider is configured, extraction falls back to a local, fully offline pattern-matcher — the document content never leaves the BizDays server in that mode.",
       "We do not use uploaded content to train models, ours or a third party's.",
     ],

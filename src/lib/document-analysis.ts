@@ -161,6 +161,10 @@ async function callAnthropic(text: string): Promise<AgreementExtraction | null> 
   const raw = data.content?.find((c) => c.type === "text")?.text;
   if (!raw) return null;
 
+  return parseAiJson(raw);
+}
+
+function parseAiJson(raw: string): AgreementExtraction | null {
   try {
     const parsed = JSON.parse(raw) as {
       pensionPercent?: number | null;
@@ -186,19 +190,57 @@ async function callAnthropic(text: string): Promise<AgreementExtraction | null> 
   }
 }
 
+async function callOpenAi(text: string): Promise<AgreementExtraction | null> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return null;
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: AI_SYSTEM_PROMPT },
+        { role: "user", content: text.slice(0, 20000) },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const data = (await response.json()) as {
+    choices?: { message?: { content?: string } }[];
+  };
+  const raw = data.choices?.[0]?.message?.content;
+  if (!raw) return null;
+
+  return parseAiJson(raw);
+}
+
 /**
  * Extracts payroll-relevant figures from agreement text. Uses an AI
  * provider only if an API key is configured server-side (never sent from
  * the client); otherwise falls back to the local heuristic extractor so
  * the feature keeps working — and keeps document content out of any
  * third party — for teams that don't want to enable AI analysis.
+ *
+ * If both keys are configured, OpenAI is tried first, then Anthropic,
+ * then the local heuristic as a final fallback.
  */
 export async function analyzeAgreementText(text: string): Promise<AgreementExtraction> {
-  const aiResult = await callAnthropic(text).catch(() => null);
-  if (aiResult) return aiResult;
+  const openAiResult = await callOpenAi(text).catch(() => null);
+  if (openAiResult) return openAiResult;
+  const anthropicResult = await callAnthropic(text).catch(() => null);
+  if (anthropicResult) return anthropicResult;
   return heuristicExtract(text);
 }
 
 export function isAiAnalysisEnabled(): boolean {
-  return Boolean(process.env.ANTHROPIC_API_KEY);
+  return Boolean(process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY);
 }

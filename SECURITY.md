@@ -34,9 +34,9 @@ POST /api/analyze-agreement  (Next.js Route Handler, Node runtime)
    │  - validates size (<=5MB) and mime type (.txt / .pdf only)
    │  - extracts text in memory (pdf-parse for PDFs)
    │
-   ├── if ANTHROPIC_API_KEY is set:
-   │       → sends extracted TEXT (not the raw file) to Anthropic's
-   │         Messages API for a single, narrowly-scoped extraction call
+   ├── if OPENAI_API_KEY or ANTHROPIC_API_KEY is set (OpenAI tried first):
+   │       → sends extracted TEXT (not the raw file) to that provider's
+   │         API for a single, narrowly-scoped extraction call
    │       → response parsed as strict JSON; no other calls, no storage
    │
    └── else:
@@ -72,10 +72,19 @@ a local variable for the lifetime of the request only.
 
 | Env var | Effect |
 | --- | --- |
-| `ANTHROPIC_API_KEY` | If set, enables AI-assisted extraction via Anthropic. If unset, the endpoint still works using the local heuristic extractor and never calls any third party. |
+| `OPENAI_API_KEY` | If set, enables AI-assisted extraction via OpenAI (tried first). |
+| `ANTHROPIC_API_KEY` | If set (and `OPENAI_API_KEY` isn't, or the OpenAI call fails), enables AI-assisted extraction via Anthropic. |
+
+If neither is set, the endpoint still works using the local heuristic
+extractor and never calls any third party.
+
+**Never commit these keys or paste them into chat/tickets** — set them
+only as deployment secrets (e.g. Vercel project env vars, or Cursor Cloud
+Agent secrets for this repo). Rotate immediately if a key is ever exposed
+outside of a secrets manager.
 
 Operators who want zero third-party involvement for document content
-should simply not set `ANTHROPIC_API_KEY` in their deployment. Enterprise
+should simply not set either key in their deployment. Enterprise
 operators who want AI assistance under their own contract/DPA with a
 provider should set their own key — content then flows under that
 organization's agreement, not a shared one.
