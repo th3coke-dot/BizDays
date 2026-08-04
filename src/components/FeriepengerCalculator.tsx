@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
 import {
   FERIEPENGER_SATSER,
   calculateFeriepenger,
@@ -13,7 +12,12 @@ import {
   calculateJunePayslip,
   juneWorkdaysForYear,
 } from "@/lib/calculate-june-payslip";
-import { TAX_TABLE_OPTIONS, type TaxTableId } from "@/lib/skattetabell";
+import {
+  DEFAULT_TAX_TABLE_ID,
+  TAX_TABLE_OPTIONS,
+  isKnownTaxTableId,
+  type TaxTableId,
+} from "@/lib/skattetabell";
 import { cn, formatNOK } from "@/lib/utils";
 import type { FeriepengerSats } from "@/types";
 
@@ -37,8 +41,11 @@ export function FeriepengerCalculator() {
   const [vacationDays, setVacationDays] = useState(String(DEFAULT_VACATION_DAYS));
   const [taxMode, setTaxMode] = useState<"prosent" | "tabell">("tabell");
   const [taxPercent, setTaxPercent] = useState("25");
-  const [taxTableId, setTaxTableId] = useState<TaxTableId>("7100");
+  const [taxTableId, setTaxTableId] = useState<TaxTableId>(DEFAULT_TAX_TABLE_ID);
   const [taxFreeFeriepenger, setTaxFreeFeriepenger] = useState(true);
+
+  const taxTableIdTrimmed = taxTableId.trim();
+  const taxTableIdKnown = taxTableIdTrimmed === "" || isKnownTaxTableId(taxTableIdTrimmed);
 
   const selected = useMemo(
     () => FERIEPENGER_SATSER.find((s) => s.value === sats),
@@ -76,7 +83,7 @@ export function FeriepengerCalculator() {
         year: SIM_YEAR,
         taxMode,
         taxPercent: parseAmount(taxPercent),
-        taxTableId,
+        taxTableId: taxTableIdKnown && taxTableIdTrimmed ? taxTableIdTrimmed : DEFAULT_TAX_TABLE_ID,
         taxFreeFeriepenger,
       }),
     [
@@ -86,7 +93,8 @@ export function FeriepengerCalculator() {
       juneWorkdays,
       taxMode,
       taxPercent,
-      taxTableId,
+      taxTableIdKnown,
+      taxTableIdTrimmed,
       taxFreeFeriepenger,
     ],
   );
@@ -218,8 +226,8 @@ export function FeriepengerCalculator() {
         <CardTitle>Simuler juni-lønnsslipp</CardTitle>
         <CardDescription>
           Feriepengetrekk for {DEFAULT_VACATION_DAYS} feriedager, pluss
-          prosenttrekk eller forenklet skattetabell. Pensjonstrekk fra
-          arbeidsgiver vises ikke på slippen.
+          prosenttrekk eller Skatteetatens ekte trekktabeller for 2026.
+          Pensjonstrekk fra arbeidsgiver vises ikke på slippen.
         </CardDescription>
 
         <div className="mt-5 grid gap-5 sm:grid-cols-2">
@@ -264,7 +272,7 @@ export function FeriepengerCalculator() {
                 {
                   id: "tabell" as const,
                   title: "Tabelltrekk",
-                  body: "Forenklet skattetabell (vanlig på skattekort).",
+                  body: "Skatteetatens ekte trekktabell (vanlig på skattekort).",
                 },
                 {
                   id: "prosent" as const,
@@ -289,10 +297,7 @@ export function FeriepengerCalculator() {
                     name="tax-mode"
                     className="mt-1 h-4 w-4 accent-[var(--accent)]"
                     checked={active}
-                    onChange={() => {
-                      setTaxMode(option.id);
-                      setTaxFreeFeriepenger(option.id === "tabell");
-                    }}
+                    onChange={() => setTaxMode(option.id)}
                   />
                   <span>
                     <span className="block font-semibold text-[var(--primary)]">
@@ -322,23 +327,45 @@ export function FeriepengerCalculator() {
             </label>
           ) : (
             <label className="grid gap-2 text-sm font-medium text-[var(--primary)]">
-              Skattetabell
-              <Select
+              Tabellnummer (fra skattekortet ditt)
+              <Input
+                type="text"
+                inputMode="numeric"
                 value={taxTableId}
-                onChange={(e) => setTaxTableId(e.target.value as TaxTableId)}
-              >
+                onChange={(e) => setTaxTableId(e.target.value)}
+                placeholder={`f.eks. ${DEFAULT_TAX_TABLE_ID}`}
+                className="min-h-12 text-base sm:min-h-11 sm:text-sm"
+              />
+              <span className="flex flex-wrap gap-1.5">
                 {TAX_TABLE_OPTIONS.map((table) => (
-                  <option key={table.id} value={table.id}>
-                    {table.label}
-                  </option>
+                  <button
+                    key={table.id}
+                    type="button"
+                    onClick={() => setTaxTableId(table.id)}
+                    className={cn(
+                      "rounded-md border px-2 py-1 text-xs font-medium transition",
+                      taxTableIdTrimmed === table.id
+                        ? "border-[var(--accent)] bg-teal-50/60 text-[var(--accent)]"
+                        : "border-[var(--border)] text-[var(--muted)] hover:border-[var(--accent)]/50",
+                    )}
+                    title={table.description}
+                  >
+                    {table.id}
+                  </button>
                 ))}
-              </Select>
-              <span className="text-xs font-normal text-[var(--muted)]">
-                {
-                  TAX_TABLE_OPTIONS.find((t) => t.id === taxTableId)
-                    ?.description
-                }
               </span>
+              {taxTableIdKnown ? (
+                <span className="text-xs font-normal text-[var(--muted)]">
+                  Ekte trekktabell fra Skatteetaten (2026). Nummeret finner du
+                  øverst på skattekortet eller lønnsslippen din.
+                </span>
+              ) : (
+                <span className="text-xs font-normal text-amber-700">
+                  Kjenner ikke igjen tabell {taxTableIdTrimmed || "—"}. Bruker{" "}
+                  {DEFAULT_TAX_TABLE_ID} som eksempel til du skriver inn et
+                  gyldig tabellnummer.
+                </span>
+              )}
             </label>
           )}
 
@@ -350,9 +377,13 @@ export function FeriepengerCalculator() {
               onChange={(e) => setTaxFreeFeriepenger(e.target.checked)}
             />
             <span>
-              Ikke trekk skatt av feriepenger i juni
+              Dette er den skattefrie feriemåneden min
               <span className="mt-0.5 block text-xs">
-                Vanlig ved tabelltrekk (skatt er fordelt over 10,5 måneder).
+                Gjelder de fleste: har du jobbet hele opptjeningsåret hos
+                arbeidsgiver, er både feriepengene og én vanlig månedslønn
+                trekkfrie – uansett om du har tabell- eller prosenttrekk.
+                Skru av hvis du er nyansatt eller får feriepenger utenom
+                normal ferieavvikling.
               </span>
             </span>
           </label>
@@ -429,9 +460,29 @@ export function FeriepengerCalculator() {
               <strong className="font-semibold text-[var(--primary)]">
                 Skattetrekk
               </strong>{" "}
-              kan være prosent eller forenklet tabell. Ekte trekk følger
-              skattekortet ditt.
+              bruker enten en fast prosent eller Skatteetatens offisielle
+              trekktabeller for 2026 (
+              <a
+                href="https://www.skatteetaten.no/satser/trekktabeller-i-tekstformat/"
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-2 hover:text-[var(--accent)]"
+              >
+                kilde
+              </a>
+              ), interpolert til nærmeste krone.
             </li>
+            {payslip.taxExempt && (
+              <li>
+                <strong className="font-semibold text-[var(--primary)]">
+                  0 kr i skatt er normalt i juni.
+                </strong>{" "}
+                Ved tabellkort og prosentkort er både feriepengene og én
+                vanlig månedslønn lovbestemt trekkfrie – skatten er i stedet
+                fordelt på de øvrige 10,5 månedene i året. Det er ikke en
+                skatterabatt, bare en annen fordeling gjennom året.
+              </li>
+            )}
             <li>
               Arbeidsgivers pensjonskostnad er ikke synlig her – den belastes
               arbeidsgiver, ikke som et vanlig trekk på din slip.

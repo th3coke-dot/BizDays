@@ -1,5 +1,9 @@
 import { calculateWorkdays } from "@/lib/calculate-workdays";
-import { tableWithholding, type TaxTableId } from "@/lib/skattetabell";
+import {
+  DEFAULT_TAX_TABLE_ID,
+  tableWithholding,
+  type TaxTableId,
+} from "@/lib/skattetabell";
 import type {
   JunePayslipInput,
   JunePayslipLine,
@@ -62,6 +66,17 @@ export function calculateFeriepengetrekkForDays(options: {
  * Feriepengetrekk = vacation days (default 25) × June day rate
  * (månedslønn / arbeidsdager i juni).
  *
+ * Tax-free holiday month: by Norwegian law (see Skatteetaten's guidance on
+ * forskuddstrekk), an employee who has worked the full accrual year for
+ * their employer gets ONE ordinary month's salary plus the feriepenger
+ * completely exempt from withholding — this is true for both tabelltrekk
+ * and prosenttrekk. It's not a discount: tax on that income was already
+ * collected by withholding slightly more in the other 10.5 months of the
+ * year. This is why a June payslip commonly shows 0 kr in tax, even with a
+ * "real" table number selected. Set taxFreeFeriepenger to false to see the
+ * ordinary (non-exempt) withholding instead, e.g. for a new hire who
+ * hasn't worked the full accrual year.
+ *
  * Employer pension is not shown — it is an employer cost, not a
  * visible employee payslip deduction in this model.
  */
@@ -94,30 +109,27 @@ export function calculateJunePayslip(
 
   const taxMode = input.taxMode ?? "prosent";
   const taxPercent = safePercent(input.taxPercent ?? 25);
-  const taxTableId: TaxTableId = input.taxTableId ?? "7100";
-  const taxFreeFeriepenger = input.taxFreeFeriepenger ?? taxMode === "tabell";
+  const taxTableId: TaxTableId = input.taxTableId ?? DEFAULT_TAX_TABLE_ID;
+  const taxFreeFeriepenger = input.taxFreeFeriepenger ?? true;
 
   const grossBeforeTax = Math.round(
     monthlySalary + feriepenger - feriepengetrekk,
   );
 
-  const taxableBase = Math.max(
-    0,
-    taxFreeFeriepenger ? monthlySalary - feriepengetrekk : grossBeforeTax,
-  );
+  const taxExempt = taxFreeFeriepenger;
+  const taxableBase = Math.max(0, taxExempt ? 0 : grossBeforeTax);
 
   let taxAmount = 0;
   let taxLabel = "";
-  if (taxMode === "tabell") {
+  if (taxExempt) {
+    taxAmount = 0;
+    taxLabel = "Skattetrekk (skattefri feriemåned)";
+  } else if (taxMode === "tabell") {
     taxAmount = tableWithholding(taxableBase, taxTableId);
-    taxLabel = taxFreeFeriepenger
-      ? `Skattetrekk (tabell ${taxTableId}, uten feriepenger)`
-      : `Skattetrekk (tabell ${taxTableId})`;
+    taxLabel = `Skattetrekk (tabell ${taxTableId})`;
   } else {
     taxAmount = Math.round((taxableBase * taxPercent) / 100);
-    taxLabel = taxFreeFeriepenger
-      ? `Skattetrekk (${String(taxPercent).replace(".", ",")} %, uten feriepenger)`
-      : `Skattetrekk (${String(taxPercent).replace(".", ",")} %)`;
+    taxLabel = `Skattetrekk (${String(taxPercent).replace(".", ",")} %)`;
   }
 
   const netPay = Math.round(grossBeforeTax - taxAmount);
@@ -172,6 +184,7 @@ export function calculateJunePayslip(
     taxMode,
     taxTableId,
     taxFreeFeriepenger,
+    taxExempt,
     taxableBase: Math.round(taxableBase),
     vacationDays,
     juneWorkdays,

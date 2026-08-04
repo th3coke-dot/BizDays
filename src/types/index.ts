@@ -44,11 +44,13 @@ export interface JunePayslipInput {
   taxMode?: "prosent" | "tabell";
   /** Withholding tax percent (prosent mode) */
   taxPercent?: number;
-  /** Simplified tax table id (tabell mode) */
-  taxTableId?: "7100" | "8000" | "7300";
+  /** Official Skatteetaten trekktabell number, e.g. "7350" (tabell mode) */
+  taxTableId?: string;
   /**
-   * When true, feriepenger are excluded from the tax base
-   * (common with tabelltrekk in June).
+   * When true, this payslip falls in the statutory tax-free holiday month:
+   * both the feriepenger and one ordinary month's salary are exempt from
+   * forskuddstrekk (withholding), per Skatteetaten's rules for employees
+   * who worked the full accrual year for this employer. Defaults to true.
    */
   taxFreeFeriepenger?: boolean;
 }
@@ -69,8 +71,9 @@ export interface JunePayslipResult {
   netPay: number;
   taxPercent: number;
   taxMode: "prosent" | "tabell";
-  taxTableId: "7100" | "8000" | "7300";
+  taxTableId: string;
   taxFreeFeriepenger: boolean;
+  taxExempt: boolean;
   taxableBase: number;
   vacationDays: number;
   juneWorkdays: number;
