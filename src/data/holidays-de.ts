@@ -431,10 +431,39 @@ function appliesToRegion(holiday: Holiday, region?: string): boolean {
   return holiday.regions.some((code) => accepted.has(code));
 }
 
+const DE_HOLIDAY_NAME_EN: Record<string, string> = {
+  Neujahr: "New Year's Day",
+  "Heilige Drei Könige": "Epiphany",
+  "Internationaler Frauentag": "International Women's Day",
+  Karfreitag: "Good Friday",
+  Ostermontag: "Easter Monday",
+  "Tag der Arbeit": "Labour Day",
+  "Christi Himmelfahrt": "Ascension Day",
+  Pfingstmontag: "Whit Monday",
+  Fronleichnam: "Corpus Christi",
+  "Augsburger Friedensfest": "Augsburg Peace Festival",
+  "Mariä Himmelfahrt": "Assumption Day",
+  Weltkindertag: "World Children's Day",
+  "Tag der Deutschen Einheit": "German Unity Day",
+  Reformationstag: "Reformation Day",
+  Allerheiligen: "All Saints' Day",
+  "Buß- und Bettag": "Day of Prayer and Repentance",
+  "1. Weihnachtstag": "Christmas Day",
+  "2. Weihnachtstag": "Boxing Day",
+};
+
+function withEnglishName(holiday: Holiday): Holiday {
+  return {
+    ...holiday,
+    nameEn: DE_HOLIDAY_NAME_EN[holiday.name] ?? holiday.name,
+  };
+}
+
 function withoutNote(holiday: Holiday): Holiday {
   return {
     date: holiday.date,
     name: holiday.name,
+    nameEn: holiday.nameEn,
     type: holiday.type,
     regions: holiday.regions,
   };
@@ -456,7 +485,7 @@ export function getHolidaysDEForYear(year: number, region?: string): Holiday[] {
   const { state } = parseGermanRegion(region);
   return holidaysDE[year]
     .filter((holiday) => appliesToRegion(holiday, region))
-    .map((holiday) => withLocalNote(holiday, state));
+    .map((holiday) => withEnglishName(withLocalNote(holiday, state)));
 }
 
 export function getAllHolidaysDE(region?: string): Holiday[] {

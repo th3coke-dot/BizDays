@@ -1,6 +1,11 @@
 import { getDay, parseISO } from "date-fns";
 import type { Holiday } from "@/types";
-import { formatDateNO } from "@/lib/utils";
+import {
+  formatDate,
+  holidayDatePattern,
+  holidayName,
+  type DateLocaleCode,
+} from "@/lib/utils";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 
 interface HolidayListProps {
@@ -13,7 +18,7 @@ interface HolidayListProps {
   movableLabel?: string;
   localHolidayLabel?: string;
   lang?: "native" | "en";
-  dateLocale?: "nb" | "sv" | "da" | "fi";
+  dateLocale?: DateLocaleCode;
 }
 
 function isWeekendDate(iso: string) {
@@ -29,9 +34,12 @@ export function HolidayList({
   weekendBadgeLabel = "Faller på helg",
   fixedLabel = "Fast",
   movableLabel = "Bevegelig",
-  localHolidayLabel = "Örtlich",
+  localHolidayLabel = "Local",
   lang = "native",
+  dateLocale,
 }: HolidayListProps) {
+  const locale: DateLocaleCode = dateLocale ?? (lang === "en" ? "en" : "nb");
+
   return (
     <Card>
       <CardTitle>{title}</CardTitle>
@@ -50,10 +58,10 @@ export function HolidayList({
               >
                 <div>
                   <p className="font-medium text-[var(--primary)]">
-                    {holiday.name}
+                    {holidayName(holiday, lang)}
                   </p>
                   <p className="text-sm text-[var(--muted)]">
-                    {formatDateNO(holiday.date, "EEEE d. MMMM yyyy")}
+                    {formatDate(holiday.date, holidayDatePattern(locale), locale)}
                   </p>
                   {holiday.note && (
                     <p className="mt-1 text-xs text-[var(--muted)]">

@@ -8,7 +8,7 @@ import { useGermanState } from "@/components/useGermanState";
 import { formatGermanRegionLabel } from "@/data/holidays-de";
 import { getHolidaysForCountryYear } from "@/data/holidays";
 import type { LocalizedCountry } from "@/lib/countries";
-import { formatDateNO } from "@/lib/utils";
+import { formatDate, holidayName, resolveDateLocale } from "@/lib/utils";
 import type { HolidayYear } from "@/types";
 
 const YEARS: HolidayYear[] = [2026, 2027];
@@ -83,6 +83,7 @@ export function GermanHolidaysIndex({ country }: { country: LocalizedCountry }) 
             movableLabel={country.labels.movable}
             localHolidayLabel={country.labels.localHoliday}
             lang={country.lang}
+            dateLocale={resolveDateLocale(country.code, country.lang)}
           />
         ))}
       </div>
@@ -129,13 +130,21 @@ export function GermanHolidaysYear({
             className="rounded-xl border border-[var(--border)] bg-white/75 px-3 py-4 text-center"
           >
             <p className="text-xs uppercase tracking-wide text-[var(--muted)]">
-              {formatDateNO(holiday.date, "EEEE")}
+              {formatDate(
+                holiday.date,
+                "EEEE",
+                resolveDateLocale(country.code, country.lang),
+              )}
             </p>
             <p className="mt-1 font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--primary)]">
-              {formatDateNO(holiday.date, "d. MMM")}
+              {formatDate(
+                holiday.date,
+                country.lang === "en" ? "d MMM" : "d. MMM",
+                resolveDateLocale(country.code, country.lang),
+              )}
             </p>
             <p className="mt-2 text-xs font-medium text-[var(--muted)]">
-              {holiday.name}
+              {holidayName(holiday, country.lang)}
             </p>
             {holiday.note && (
               <p className="mt-1 text-[10px] leading-snug text-[var(--muted)]">
@@ -156,6 +165,7 @@ export function GermanHolidaysYear({
         movableLabel={country.labels.movable}
         localHolidayLabel={country.labels.localHoliday}
         lang={country.lang}
+        dateLocale={resolveDateLocale(country.code, country.lang)}
       />
     </div>
   );

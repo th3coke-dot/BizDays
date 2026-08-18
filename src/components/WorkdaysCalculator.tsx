@@ -11,7 +11,7 @@ import { useGermanState } from "@/components/useGermanState";
 import { calculateWorkdays } from "@/lib/calculate-workdays";
 import { COUNTRIES, type AppLanguage, type CountryCode } from "@/lib/countries";
 import type { UiLabels } from "@/lib/i18n";
-import { toISODate } from "@/lib/utils";
+import { resolveDateLocale, toISODate } from "@/lib/utils";
 import type { WorkdayResult } from "@/types";
 
 function defaultRange() {
@@ -132,6 +132,7 @@ export function WorkdaysCalculator({ country = "no", labels, lang = "native" }: 
             movableLabel={l.movable}
             localHolidayLabel={l.localHoliday}
             lang={lang}
+            dateLocale={resolveDateLocale(country, lang)}
           />
         </>
       )}

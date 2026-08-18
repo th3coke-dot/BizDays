@@ -7,7 +7,7 @@ import { HolidayList } from "@/components/HolidayList";
 import { WorkdaysCalculator } from "@/components/WorkdaysCalculator";
 import { getHolidaysForCountryYear } from "@/data/holidays";
 import type { LocalizedCountry } from "@/lib/countries";
-import { formatDateNO } from "@/lib/utils";
+import { formatDate, holidayName, resolveDateLocale } from "@/lib/utils";
 import type { HolidayYear } from "@/types";
 
 export function CountryWorkdaysPage({ country }: { country: LocalizedCountry }) {
@@ -90,6 +90,8 @@ export function CountryHolidaysIndex({ country }: { country: LocalizedCountry })
             weekendBadgeLabel={country.labels.weekendBadge}
             fixedLabel={country.labels.fixed}
             movableLabel={country.labels.movable}
+            lang={country.lang}
+            dateLocale={resolveDateLocale(country.code, country.lang)}
           />
         ))}
       </div>
@@ -130,12 +132,22 @@ export function CountryHolidaysYear({
             className="rounded-xl border border-[var(--border)] bg-white/75 px-3 py-4 text-center"
           >
             <p className="text-xs uppercase tracking-wide text-[var(--muted)]">
-              {formatDateNO(h.date, "EEEE")}
+              {formatDate(
+                h.date,
+                "EEEE",
+                resolveDateLocale(country.code, country.lang),
+              )}
             </p>
             <p className="mt-1 font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--primary)]">
-              {formatDateNO(h.date, "d. MMM")}
+              {formatDate(
+                h.date,
+                country.lang === "en" ? "d MMM" : "d. MMM",
+                resolveDateLocale(country.code, country.lang),
+              )}
             </p>
-            <p className="mt-2 text-xs font-medium text-[var(--muted)]">{h.name}</p>
+            <p className="mt-2 text-xs font-medium text-[var(--muted)]">
+              {holidayName(h, country.lang)}
+            </p>
           </div>
         ))}
       </div>
@@ -146,6 +158,8 @@ export function CountryHolidaysYear({
         weekendBadgeLabel={country.labels.weekendBadge}
         fixedLabel={country.labels.fixed}
         movableLabel={country.labels.movable}
+        lang={country.lang}
+        dateLocale={resolveDateLocale(country.code, country.lang)}
       />
     </div>
   );

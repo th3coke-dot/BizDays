@@ -11,7 +11,7 @@ import {
   resolveLabels,
 } from "@/lib/countries";
 import { diffParts, getCountdownTargets } from "@/lib/countdown";
-import { cn, formatDateNO } from "@/lib/utils";
+import { cn, formatDate, holidayDatePattern, resolveDateLocale } from "@/lib/utils";
 
 type Props = {
   country?: CountryCode;
@@ -21,6 +21,7 @@ type Props = {
 export function CountdownBoard({ country = "no", lang = "native" }: Props) {
   const labels = resolveLabels(country, lang);
   const path = getCountryPaths(country, lang).countdownPath;
+  const dateLocale = resolveDateLocale(country, lang);
   const targets = useMemo(
     () => getCountdownTargets(country, new Date(), lang),
     [country, lang],
@@ -43,7 +44,7 @@ export function CountdownBoard({ country = "no", lang = "native" }: Props) {
   const parts = diffParts(active.date, now);
 
   async function share() {
-    const text = `${parts.days} → ${active.name} (${formatDateNO(active.date)}) – BizDays`;
+    const text = `${parts.days} → ${active.name} (${formatDate(active.date, undefined, dateLocale)}) – BizDays`;
     const url =
       typeof window !== "undefined"
         ? `${window.location.origin}${path}?t=${active.id}`
@@ -89,7 +90,8 @@ export function CountdownBoard({ country = "no", lang = "native" }: Props) {
       <Card className="overflow-hidden">
         <CardTitle>{active.name}</CardTitle>
         <CardDescription>
-          {active.description} · {formatDateNO(active.date, "EEEE d. MMMM yyyy")}
+          {active.description} ·{" "}
+          {formatDate(active.date, holidayDatePattern(dateLocale), dateLocale)}
         </CardDescription>
 
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">

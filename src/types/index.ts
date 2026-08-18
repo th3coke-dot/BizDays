@@ -3,6 +3,7 @@ export type HolidayType = "fixed" | "movable";
 export interface Holiday {
   date: string; // YYYY-MM-DD
   name: string;
+  nameEn?: string;
   type: HolidayType;
   /** Region codes this holiday applies to. Omit for nationwide holidays. */
   regions?: string[];
