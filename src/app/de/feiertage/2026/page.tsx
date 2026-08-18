@@ -7,7 +7,7 @@ const country = withLocale("de");
 
 export const metadata: Metadata = createPageMetadata({
   title: "Feiertage 2026",
-  description: "Deutsche Feiertage 2026.",
+  description: "Deutsche Feiertage 2026 – bundesweit und nach Bundesland.",
   path: "/de/feiertage/2026",
 });
 

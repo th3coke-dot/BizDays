@@ -7,7 +7,7 @@ const country = withLocale("de");
 
 export const metadata: Metadata = createPageMetadata({
   title: "Deutsche Feiertage",
-  description: "Bundesweite Feiertage 2026 und 2027.",
+  description: "Gesetzliche Feiertage 2026 und 2027 – nach Bundesland.",
   path: "/de/feiertage",
 });
 

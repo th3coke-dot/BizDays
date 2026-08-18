@@ -20,7 +20,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const country = withLocale(code, "en");
   return createPageMetadata({
     title: `Holidays ${year} – ${country.name}`,
-    description: `${country.name} public holidays ${year}.`,
+    description:
+      code === "de"
+        ? `Germany public holidays ${year}, including differences by federal state.`
+        : `${country.name} public holidays ${year}.`,
     path: `/en/${code}/holidays/${year}`,
   });
 }

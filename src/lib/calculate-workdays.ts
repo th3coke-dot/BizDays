@@ -31,9 +31,10 @@ function toDateKey(date: Date): string {
 export function isHoliday(
   date: Date | string,
   country: CountryCode = "no",
+  region?: string,
 ): Holiday | undefined {
   const iso = typeof date === "string" ? date.slice(0, 10) : toDateKey(date);
-  return holidayMap(getAllHolidaysForCountry(country)).get(iso);
+  return holidayMap(getAllHolidaysForCountry(country, region)).get(iso);
 }
 
 /**
@@ -44,6 +45,7 @@ export function calculateWorkdays(
   startDate: string | Date,
   endDate: string | Date,
   country: CountryCode = "no",
+  region?: string,
 ): WorkdayResult {
   const start = startOfDay(
     typeof startDate === "string" ? parseISO(startDate) : startDate,
@@ -68,7 +70,7 @@ export function calculateWorkdays(
   }
 
   const relevantHolidays = Array.from(years).flatMap((y) =>
-    getHolidaysForCountryYear(country, y),
+    getHolidaysForCountryYear(country, y, region),
   );
   const map = holidayMap(relevantHolidays);
 

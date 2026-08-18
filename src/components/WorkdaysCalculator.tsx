@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { DateRangePicker } from "@/components/DateRangePicker";
+import { GermanStateSelect } from "@/components/GermanStateSelect";
 import { ResultCard } from "@/components/ResultCard";
 import { HolidayList } from "@/components/HolidayList";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
+import { useGermanState } from "@/components/useGermanState";
 import { calculateWorkdays } from "@/lib/calculate-workdays";
-import { COUNTRIES, type CountryCode } from "@/lib/countries";
+import { COUNTRIES, type AppLanguage, type CountryCode } from "@/lib/countries";
 import type { UiLabels } from "@/lib/i18n";
 import { toISODate } from "@/lib/utils";
 import type { WorkdayResult } from "@/types";
@@ -22,19 +24,31 @@ function defaultRange() {
 type Props = {
   country?: CountryCode;
   labels?: UiLabels;
+  lang?: AppLanguage;
 };
 
-export function WorkdaysCalculator({ country = "no", labels }: Props) {
+export function WorkdaysCalculator({ country = "no", labels, lang = "native" }: Props) {
   const l = labels ?? COUNTRIES[country].labels;
   const defaults = defaultRange();
   const [startDate, setStartDate] = useState(defaults.start);
   const [endDate, setEndDate] = useState(defaults.end);
+  const [germanState, setGermanState] = useGermanState();
   const [result, setResult] = useState<WorkdayResult | null>(() =>
-    calculateWorkdays(defaults.start, defaults.end, country),
+    calculateWorkdays(
+      defaults.start,
+      defaults.end,
+      country,
+      country === "de" ? germanState || undefined : undefined,
+    ),
   );
   const [error, setError] = useState<string | null>(null);
+  const showGermanStates = country === "de";
 
-  function apply(nextStart: string, nextEnd: string) {
+  function apply(
+    nextStart: string,
+    nextEnd: string,
+    nextRegion = germanState,
+  ) {
     if (!nextStart || !nextEnd) {
       setError(`${l.fromDate} / ${l.toDate}`);
       setResult(null);
@@ -46,7 +60,14 @@ export function WorkdaysCalculator({ country = "no", labels }: Props) {
       return;
     }
     setError(null);
-    setResult(calculateWorkdays(nextStart, nextEnd, country));
+    setResult(
+      calculateWorkdays(
+        nextStart,
+        nextEnd,
+        country,
+        nextRegion || undefined,
+      ),
+    );
   }
 
   return (
@@ -54,7 +75,18 @@ export function WorkdaysCalculator({ country = "no", labels }: Props) {
       <Card>
         <CardTitle>{l.choosePeriod}</CardTitle>
         <CardDescription>{l.explanation}</CardDescription>
-        <div className="mt-5">
+        <div className="mt-5 grid gap-4">
+          {showGermanStates && (
+            <GermanStateSelect
+              value={germanState}
+              onChange={(value) => {
+                setGermanState(value);
+                apply(startDate, endDate, value);
+              }}
+              labels={l}
+              lang={lang}
+            />
+          )}
           <DateRangePicker
             startDate={startDate}
             endDate={endDate}

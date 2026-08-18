@@ -49,6 +49,9 @@ export type UiLabels = {
   monthRate: string;
   yearRate: string;
   workingDaysBasis: string;
+  federalState: string;
+  nationwide: string;
+  stateHolidaysHint: string;
 };
 
 /** Shared English UI for every country. */
@@ -103,6 +106,10 @@ export const EN_LABELS: UiLabels = {
   monthRate: "Month rate",
   yearRate: "Year rate",
   workingDaysBasis: "Day rate uses 260 working days per year.",
+  federalState: "Federal state",
+  nationwide: "Nationwide only",
+  stateHolidaysHint:
+    "Select a federal state to include state-specific public holidays.",
 };
 
 export function englishLabelsForCountry(

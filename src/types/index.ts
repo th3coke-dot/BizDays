@@ -4,6 +4,8 @@ export interface Holiday {
   date: string; // YYYY-MM-DD
   name: string;
   type: HolidayType;
+  /** Region codes this holiday applies to. Omit for nationwide holidays. */
+  regions?: string[];
 }
 
 export type HolidayYear = 2025 | 2026 | 2027;

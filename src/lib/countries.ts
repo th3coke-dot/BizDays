@@ -385,7 +385,12 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       weekendCount: "Wochenenden",
       redDaysTitle: "Abgezogene Feiertage",
       noHolidays: "Keine Feiertage im gewählten Zeitraum.",
-      explanation: "Wochenenden und deutsche Feiertage wurden abgezogen.",
+      explanation:
+        "Wochenenden und Feiertage des gewählten Bundeslandes wurden abgezogen.",
+      federalState: "Bundesland",
+      nationwide: "Nur bundesweit",
+      stateHolidaysHint:
+        "Wählen Sie ein Bundesland, um landesspezifische Feiertage einzubeziehen.",
       weekendBadge: "Fällt auf ein Wochenende",
       fixed: "Fest",
       movable: "Beweglich",
@@ -423,7 +428,15 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       yearRate: "Jahressatz",
       workingDaysBasis: "Tagessatz auf Basis von 260 Arbeitstagen pro Jahr.",
     },
-    labelsEn: englishLabelsForCountry("Germany", "public holidays"),
+    labelsEn: {
+      ...englishLabelsForCountry("Germany", "public holidays"),
+      explanation:
+        "Weekends and public holidays for the selected German state are excluded.",
+      federalState: "Federal state",
+      nationwide: "Nationwide only",
+      stateHolidaysHint:
+        "Select a federal state to include state-specific public holidays.",
+    },
   },
   pl: {
     code: "pl",

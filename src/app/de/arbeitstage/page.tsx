@@ -7,7 +7,7 @@ const country = withLocale("de");
 
 export const metadata: Metadata = createPageMetadata({
   title: "Arbeitstage berechnen",
-  description: "Deutsche Arbeitstage zwischen zwei Daten.",
+  description: "Deutsche Arbeitstage zwischen zwei Daten – inkl. Feiertage nach Bundesland.",
   path: "/de/arbeitstage",
 });
 

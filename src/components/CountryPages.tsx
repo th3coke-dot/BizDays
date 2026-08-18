@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { CountdownBoard } from "@/components/CountdownBoard";
 import { EmploymentCostCalculator } from "@/components/EmploymentCostCalculator";
+import { GermanHolidaysIndex, GermanHolidaysYear } from "@/components/GermanHolidays";
 import { HolidayList } from "@/components/HolidayList";
 import { WorkdaysCalculator } from "@/components/WorkdaysCalculator";
 import { getHolidaysForCountryYear } from "@/data/holidays";
@@ -23,7 +24,11 @@ export function CountryWorkdaysPage({ country }: { country: LocalizedCountry }) 
           {country.labels.explanation}
         </p>
       </header>
-      <WorkdaysCalculator country={country.code} labels={country.labels} />
+      <WorkdaysCalculator
+        country={country.code}
+        labels={country.labels}
+        lang={country.lang}
+      />
       <aside className="mt-10 text-sm text-[var(--muted)]">
         <Link
           href={country.holidaysPath}
@@ -37,6 +42,10 @@ export function CountryWorkdaysPage({ country }: { country: LocalizedCountry }) 
 }
 
 export function CountryHolidaysIndex({ country }: { country: LocalizedCountry }) {
+  if (country.code === "de") {
+    return <GermanHolidaysIndex country={country} />;
+  }
+
   const years: HolidayYear[] = [2026, 2027];
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-12">
@@ -95,6 +104,10 @@ export function CountryHolidaysYear({
   country: LocalizedCountry;
   year: HolidayYear;
 }) {
+  if (country.code === "de") {
+    return <GermanHolidaysYear country={country} year={year} />;
+  }
+
   const holidays = getHolidaysForCountryYear(country.code, year);
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-12">

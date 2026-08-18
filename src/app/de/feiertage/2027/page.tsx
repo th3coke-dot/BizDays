@@ -7,7 +7,7 @@ const country = withLocale("de");
 
 export const metadata: Metadata = createPageMetadata({
   title: "Feiertage 2027",
-  description: "Deutsche Feiertage 2027.",
+  description: "Deutsche Feiertage 2027 – bundesweit und nach Bundesland.",
   path: "/de/feiertage/2027",
 });
 
