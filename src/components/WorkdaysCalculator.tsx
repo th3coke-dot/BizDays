@@ -130,6 +130,8 @@ export function WorkdaysCalculator({ country = "no", labels, lang = "native" }: 
             weekendBadgeLabel={l.weekendBadge}
             fixedLabel={l.fixed}
             movableLabel={l.movable}
+            localHolidayLabel={l.localHoliday}
+            lang={lang}
           />
         </>
       )}

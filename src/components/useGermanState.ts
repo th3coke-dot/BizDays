@@ -1,17 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import type { GermanStateCode } from "@/data/holidays-de";
 
-let rememberedState: GermanStateCode | "" = "";
+let rememberedRegion = "";
 
 export function useGermanState() {
-  const [state, setState] = useState<GermanStateCode | "">(rememberedState);
+  const [region, setRegion] = useState(rememberedRegion);
 
-  function update(next: GermanStateCode | "") {
-    rememberedState = next;
-    setState(next);
+  function update(next: string) {
+    rememberedRegion = next;
+    setRegion(next);
   }
 
-  return [state, update] as const;
+  return [region, update] as const;
 }

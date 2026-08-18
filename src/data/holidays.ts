@@ -5,17 +5,9 @@ import { getAllHolidaysSE, getHolidaysSEForYear } from "@/data/holidays-se";
 import { getAllHolidaysDK, getHolidaysDKForYear } from "@/data/holidays-dk";
 import { getAllHolidaysFI, getHolidaysFIForYear } from "@/data/holidays-fi";
 import { getAllHolidaysUK, getHolidaysUKForYear } from "@/data/holidays-uk";
-import {
-  getAllHolidaysDE,
-  getHolidaysDEForYear,
-  isGermanStateCode,
-} from "@/data/holidays-de";
+import { getAllHolidaysDE, getHolidaysDEForYear } from "@/data/holidays-de";
 import { getAllHolidaysPL, getHolidaysPLForYear } from "@/data/holidays-pl";
 import { getAllHolidaysIS, getHolidaysISForYear } from "@/data/holidays-is";
-
-function germanStateFromRegion(region?: string) {
-  return isGermanStateCode(region) ? region : undefined;
-}
 
 export function getHolidaysForCountryYear(
   country: CountryCode,
@@ -32,7 +24,7 @@ export function getHolidaysForCountryYear(
     case "uk":
       return getHolidaysUKForYear(year);
     case "de":
-      return getHolidaysDEForYear(year, germanStateFromRegion(region));
+      return getHolidaysDEForYear(year, region);
     case "pl":
       return getHolidaysPLForYear(year);
     case "is":
@@ -56,7 +48,7 @@ export function getAllHolidaysForCountry(
     case "uk":
       return getAllHolidaysUK();
     case "de":
-      return getAllHolidaysDE(germanStateFromRegion(region));
+      return getAllHolidaysDE(region);
     case "pl":
       return getAllHolidaysPL();
     case "is":

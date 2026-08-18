@@ -6,6 +6,9 @@ export interface Holiday {
   type: HolidayType;
   /** Region codes this holiday applies to. Omit for nationwide holidays. */
   regions?: string[];
+  /** Shown when the holiday is not statewide (e.g. only some municipalities). */
+  note?: string;
+  noteEn?: string;
 }
 
 export type HolidayYear = 2025 | 2026 | 2027;

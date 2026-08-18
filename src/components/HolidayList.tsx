@@ -11,6 +11,8 @@ interface HolidayListProps {
   weekendBadgeLabel?: string;
   fixedLabel?: string;
   movableLabel?: string;
+  localHolidayLabel?: string;
+  lang?: "native" | "en";
   dateLocale?: "nb" | "sv" | "da" | "fi";
 }
 
@@ -27,6 +29,8 @@ export function HolidayList({
   weekendBadgeLabel = "Faller på helg",
   fixedLabel = "Fast",
   movableLabel = "Bevegelig",
+  localHolidayLabel = "Örtlich",
+  lang = "native",
 }: HolidayListProps) {
   return (
     <Card>
@@ -51,11 +55,21 @@ export function HolidayList({
                   <p className="text-sm text-[var(--muted)]">
                     {formatDateNO(holiday.date, "EEEE d. MMMM yyyy")}
                   </p>
+                  {holiday.note && (
+                    <p className="mt-1 text-xs text-[var(--muted)]">
+                      {lang === "en" && holiday.noteEn ? holiday.noteEn : holiday.note}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {showWeekendBadge && onWeekend && (
                     <span className="inline-flex w-fit rounded-md bg-sky-50 px-2.5 py-1 text-xs font-medium text-sky-800">
                       {weekendBadgeLabel}
+                    </span>
+                  )}
+                  {holiday.note && (
+                    <span className="inline-flex w-fit rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">
+                      {localHolidayLabel}
                     </span>
                   )}
                   <span className="inline-flex w-fit rounded-md bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700">

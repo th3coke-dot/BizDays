@@ -391,6 +391,8 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       nationwide: "Nur bundesweit",
       stateHolidaysHint:
         "Wählen Sie ein Bundesland, um landesspezifische Feiertage einzubeziehen.",
+      localRule: "Örtliche Regelung",
+      localHoliday: "Örtlich",
       weekendBadge: "Fällt auf ein Wochenende",
       fixed: "Fest",
       movable: "Beweglich",
@@ -436,6 +438,8 @@ export const COUNTRIES: Record<CountryCode, CountryConfig> = {
       nationwide: "Nationwide only",
       stateHolidaysHint:
         "Select a federal state to include state-specific public holidays.",
+      localRule: "Local rule",
+      localHoliday: "Local",
     },
   },
   pl: {

@@ -52,10 +52,159 @@ export function isGermanStateCode(value: string | null | undefined): value is Ge
   return !!value && (GERMAN_STATE_CODES as readonly string[]).includes(value);
 }
 
+export const GERMAN_LOCALITY_IDS = [
+  "statewide",
+  "katholisch",
+  "evangelisch",
+  "augsburg",
+] as const;
+
+export type GermanLocalityId = (typeof GERMAN_LOCALITY_IDS)[number];
+
+export type GermanLocalityOption = {
+  id: GermanLocalityId;
+  name: string;
+  nameEn: string;
+};
+
+export type GermanRegionSelection = {
+  state?: GermanStateCode;
+  locality: GermanLocalityId;
+};
+
+const BAVARIA_LOCALITIES: GermanLocalityOption[] = [
+  {
+    id: "katholisch",
+    name: "Überwiegend katholische Gemeinde",
+    nameEn: "Catholic-majority municipality",
+  },
+  {
+    id: "evangelisch",
+    name: "Überwiegend evangelische Gemeinde",
+    nameEn: "Protestant-majority municipality",
+  },
+  {
+    id: "augsburg",
+    name: "Stadt Augsburg",
+    nameEn: "City of Augsburg",
+  },
+];
+
+const CORPUS_CHRISTI_LOCALITIES: GermanLocalityOption[] = [
+  {
+    id: "statewide",
+    name: "Landesweit (ohne Fronleichnam)",
+    nameEn: "Statewide (without Corpus Christi)",
+  },
+  {
+    id: "katholisch",
+    name: "Gemeinde mit Fronleichnam",
+    nameEn: "Municipality with Corpus Christi",
+  },
+];
+
+export const GERMAN_STATE_LOCALITIES: Partial<
+  Record<GermanStateCode, GermanLocalityOption[]>
+> = {
+  by: BAVARIA_LOCALITIES,
+  sn: CORPUS_CHRISTI_LOCALITIES,
+  th: CORPUS_CHRISTI_LOCALITIES,
+};
+
+export const GERMAN_STATE_LOCALITY_HINT: Partial<
+  Record<GermanStateCode, { de: string; en: string }>
+> = {
+  by: {
+    de: "Mariä Himmelfahrt (15.8.) gilt nur in Gemeinden mit überwiegend katholischer Bevölkerung. Das Augsburger Friedensfest (8.8.) nur in der Stadt Augsburg.",
+    en: "Assumption Day (15 Aug) is a holiday only in Catholic-majority municipalities. Augsburg Peace Festival (8 Aug) is observed only in the city of Augsburg.",
+  },
+  sn: {
+    de: "Fronleichnam ist in Sachsen nur in vom Innenministerium bestimmten Regionen ein gesetzlicher Feiertag.",
+    en: "In Saxony, Corpus Christi is a public holiday only in designated Catholic regions.",
+  },
+  th: {
+    de: "Fronleichnam ist in Thüringen nur in Gemeinden mit überwiegend katholischer Bevölkerung ein gesetzlicher Feiertag.",
+    en: "In Thuringia, Corpus Christi is a public holiday only in Catholic-majority municipalities.",
+  },
+};
+
+export function isGermanLocalityId(
+  value: string | null | undefined,
+): value is GermanLocalityId {
+  return !!value && (GERMAN_LOCALITY_IDS as readonly string[]).includes(value);
+}
+
+export function defaultGermanLocality(state?: GermanStateCode): GermanLocalityId {
+  if (state === "by") return "katholisch";
+  return "statewide";
+}
+
+export function parseGermanRegion(region?: string): GermanRegionSelection {
+  if (!region) return { locality: "statewide" };
+  const [statePart, localityPart] = region.split(":");
+  if (!isGermanStateCode(statePart)) return { locality: "statewide" };
+  const localities = GERMAN_STATE_LOCALITIES[statePart];
+  if (isGermanLocalityId(localityPart) && localities?.some((item) => item.id === localityPart)) {
+    return { state: statePart, locality: localityPart };
+  }
+  return { state: statePart, locality: defaultGermanLocality(statePart) };
+}
+
+export function serializeGermanRegion(
+  state: GermanStateCode | "",
+  locality?: GermanLocalityId,
+): string {
+  if (!state) return "";
+  const resolved = locality ?? defaultGermanLocality(state);
+  if (!GERMAN_STATE_LOCALITIES[state] || resolved === "statewide") return state;
+  return `${state}:${resolved}`;
+}
+
+export function formatGermanRegionLabel(
+  region: string | undefined,
+  lang: "native" | "en",
+): string {
+  const { state, locality } = parseGermanRegion(region);
+  if (!state) return "";
+  const stateInfo = GERMAN_STATES.find((item) => item.id === state);
+  const stateName = stateInfo
+    ? lang === "en"
+      ? stateInfo.nameEn
+      : stateInfo.name
+    : state;
+  const option = GERMAN_STATE_LOCALITIES[state]?.find((item) => item.id === locality);
+  if (!option || option.id === "statewide") return stateName;
+  return `${stateName} · ${lang === "en" ? option.nameEn : option.name}`;
+}
+
 const EPIPHANY = ["bw", "by", "st"] as const;
 const WOMENS_DAY = ["be", "mv"] as const;
-const CORPUS_CHRISTI = ["bw", "by", "he", "nw", "rp", "sl"] as const;
-const ASSUMPTION = ["by", "sl"] as const;
+const CORPUS_CHRISTI = [
+  "bw",
+  "by",
+  "he",
+  "nw",
+  "rp",
+  "sl",
+  "sn:katholisch",
+  "th:katholisch",
+] as const;
+const ASSUMPTION = ["sl", "by:katholisch"] as const;
+const ASSUMPTION_NOTE = {
+  note: "In Bayern nur in Gemeinden mit überwiegend katholischer Bevölkerung. Im Saarland landesweit.",
+  noteEn:
+    "In Bavaria only in Catholic-majority municipalities. Statewide in Saarland.",
+};
+const FRIEDENSFEST = ["by:augsburg"] as const;
+const FRIEDENSFEST_NOTE = {
+  note: "Nur in der Stadt Augsburg.",
+  noteEn: "Only in the city of Augsburg.",
+};
+const CORPUS_CHRISTI_NOTE = {
+  note: "In Sachsen und Thüringen nur in bestimmten katholischen Gemeinden; in den anderen genannten Ländern landesweit.",
+  noteEn:
+    "In Saxony and Thuringia only in designated Catholic municipalities; statewide in the other listed states.",
+};
 const CHILDRENS_DAY = ["th"] as const;
 const REFORMATION = ["bb", "hb", "hh", "mv", "ni", "sn", "st", "sh", "th"] as const;
 const ALL_SAINTS = ["bw", "by", "nw", "rp", "sl"] as const;
@@ -87,12 +236,21 @@ export const holidaysDE: Record<HolidayYear, Holiday[]> = {
       name: "Fronleichnam",
       type: "movable",
       regions: [...CORPUS_CHRISTI],
+      ...CORPUS_CHRISTI_NOTE,
+    },
+    {
+      date: "2025-08-08",
+      name: "Augsburger Friedensfest",
+      type: "fixed",
+      regions: [...FRIEDENSFEST],
+      ...FRIEDENSFEST_NOTE,
     },
     {
       date: "2025-08-15",
       name: "Mariä Himmelfahrt",
       type: "fixed",
       regions: [...ASSUMPTION],
+      ...ASSUMPTION_NOTE,
     },
     {
       date: "2025-09-20",
@@ -146,12 +304,21 @@ export const holidaysDE: Record<HolidayYear, Holiday[]> = {
       name: "Fronleichnam",
       type: "movable",
       regions: [...CORPUS_CHRISTI],
+      ...CORPUS_CHRISTI_NOTE,
+    },
+    {
+      date: "2026-08-08",
+      name: "Augsburger Friedensfest",
+      type: "fixed",
+      regions: [...FRIEDENSFEST],
+      ...FRIEDENSFEST_NOTE,
     },
     {
       date: "2026-08-15",
       name: "Mariä Himmelfahrt",
       type: "fixed",
       regions: [...ASSUMPTION],
+      ...ASSUMPTION_NOTE,
     },
     {
       date: "2026-09-20",
@@ -205,12 +372,21 @@ export const holidaysDE: Record<HolidayYear, Holiday[]> = {
       name: "Fronleichnam",
       type: "movable",
       regions: [...CORPUS_CHRISTI],
+      ...CORPUS_CHRISTI_NOTE,
+    },
+    {
+      date: "2027-08-08",
+      name: "Augsburger Friedensfest",
+      type: "fixed",
+      regions: [...FRIEDENSFEST],
+      ...FRIEDENSFEST_NOTE,
     },
     {
       date: "2027-08-15",
       name: "Mariä Himmelfahrt",
       type: "fixed",
       regions: [...ASSUMPTION],
+      ...ASSUMPTION_NOTE,
     },
     {
       date: "2027-09-20",
@@ -242,22 +418,49 @@ export const holidaysDE: Record<HolidayYear, Holiday[]> = {
   ],
 };
 
-function appliesToState(holiday: Holiday, state?: GermanStateCode): boolean {
+function appliesToRegion(holiday: Holiday, region?: string): boolean {
   if (!holiday.regions || holiday.regions.length === 0) return true;
+  const { state, locality } = parseGermanRegion(region);
   if (!state) return false;
-  return holiday.regions.includes(state);
+
+  const accepted = new Set<string>([state]);
+  if (locality !== "statewide") {
+    accepted.add(`${state}:${locality}`);
+    if (locality === "augsburg") accepted.add(`${state}:katholisch`);
+  }
+  return holiday.regions.some((code) => accepted.has(code));
 }
 
-export function getHolidaysDEForYear(
-  year: number,
-  state?: GermanStateCode,
-): Holiday[] {
+function withoutNote(holiday: Holiday): Holiday {
+  return {
+    date: holiday.date,
+    name: holiday.name,
+    type: holiday.type,
+    regions: holiday.regions,
+  };
+}
+
+function withLocalNote(holiday: Holiday, state?: GermanStateCode): Holiday {
+  if (!holiday.note) return holiday;
+  if (holiday.name === "Mariä Himmelfahrt" && state === "sl") {
+    return withoutNote(holiday);
+  }
+  if (holiday.name === "Fronleichnam" && state !== "sn" && state !== "th") {
+    return withoutNote(holiday);
+  }
+  return holiday;
+}
+
+export function getHolidaysDEForYear(year: number, region?: string): Holiday[] {
   if (year !== 2025 && year !== 2026 && year !== 2027) return [];
-  return holidaysDE[year].filter((holiday) => appliesToState(holiday, state));
+  const { state } = parseGermanRegion(region);
+  return holidaysDE[year]
+    .filter((holiday) => appliesToRegion(holiday, region))
+    .map((holiday) => withLocalNote(holiday, state));
 }
 
-export function getAllHolidaysDE(state?: GermanStateCode): Holiday[] {
+export function getAllHolidaysDE(region?: string): Holiday[] {
   return ([2025, 2026, 2027] as HolidayYear[]).flatMap((year) =>
-    getHolidaysDEForYear(year, state),
+    getHolidaysDEForYear(year, region),
   );
 }

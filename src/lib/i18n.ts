@@ -52,6 +52,8 @@ export type UiLabels = {
   federalState: string;
   nationwide: string;
   stateHolidaysHint: string;
+  localRule: string;
+  localHoliday: string;
 };
 
 /** Shared English UI for every country. */
@@ -110,6 +112,8 @@ export const EN_LABELS: UiLabels = {
   nationwide: "Nationwide only",
   stateHolidaysHint:
     "Select a federal state to include state-specific public holidays.",
+  localRule: "Local rule",
+  localHoliday: "Local",
 };
 
 export function englishLabelsForCountry(
